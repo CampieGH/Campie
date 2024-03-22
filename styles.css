@@ -1,0 +1,49 @@
+/* Reset default browser styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Set full viewport size for game container */
+#game-container {
+    width: 100vw;
+    height: 100vh;
+    background-color: #222; /* Dark background color */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* Hide overflow to prevent scrollbars */
+}
+
+/* Style the game canvas */
+#game-canvas {
+    border: 2px solid #fff; /* White border for the canvas */
+    display: block;
+}
+
+/* Style virtual controls for mobile devices */
+#virtual-controls {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+#virtual-controls button {
+    font-size: 24px;
+    width: 50px;
+    height: 50px;
+    margin: 5px;
+    border: none;
+    background-color: #444;
+    color: #fff;
+    cursor: pointer;
+}
+
+/* Hide virtual controls by default */
+.hidden {
+    display: none;
+}
+
+/* Add additional styling as needed */
