@@ -1,21 +1,21 @@
 /* Add your CSS styles here */
 body, html {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
 }
 
 #game-canvas {
-  display: block;
+    display: block;
 }
 
 #virtual-controls {
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
-  z-index: 1000;
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
-/* Add more styles as needed */
+#virtual-controls button {
+    margin: 5px;
+}
