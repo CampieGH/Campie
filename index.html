@@ -52,13 +52,22 @@
         setInterval(function(){
           analyser.getByteFrequencyData(dataArray);
           // Process received signal (dataArray) to decode
-          // For simplicity, let's just display the values
-          receiverDiv.innerHTML = Array.from(dataArray).join(', ');
+          var decodedText = signalToText(dataArray);
+          receiverDiv.innerHTML = decodedText;
         }, 100);
       })
       .catch(function(err) {
         console.log('The following error occurred: ' + err);
       });
+
+    function signalToText(signal) {
+      // Convert the received signal back into text
+      var text = '';
+      signal.forEach(value => {
+        text += String.fromCharCode(Math.round(value / 100));
+      });
+      return text;
+    }
   </script>
 </body>
 </html>
