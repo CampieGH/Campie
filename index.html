@@ -11,56 +11,74 @@
   <div id="receiver"></div>
 
   <script>
+    // Object to store character to frequency mapping
+    var charFrequencyMap = {
+      'a': 500,
+      'b': 600,
+      'c': 700,
+      'd': 800,
+      'e': 900,
+      'f': 1000,
+      'g': 1100,
+      'h': 1200,
+      'i': 1300,
+      'j': 1400,
+      'k': 1500,
+      'l': 1600,
+      'm': 1700,
+      'n': 1800,
+      'o': 1900,
+      'p': 2000,
+      'q': 2100,
+      'r': 2200,
+      's': 2300,
+      't': 2400,
+      'u': 2500,
+      'v': 2600,
+      'w': 2700,
+      'x': 2800,
+      'y': 2900,
+      'z': 3000,
+      ' ': 3100, // space character
+      // Add more characters if needed
+    };
+
     function transmit() {
-      var text = document.getElementById('textInput').value;
+      var text = document.getElementById('textInput').value.toLowerCase(); // Convert text to lowercase for simplicity
       var encoded = textToSignal(text);
       playSound(encoded);
     }
 
     function textToSignal(text) {
       // Convert text to a signal
-      var binarySignal = '';
+      var signal = [];
       for (var i = 0; i < text.length; i++) {
-        var charCode = text.charCodeAt(i);
-        binarySignal += ('00000000' + charCode.toString(2)).slice(-8); // Convert charCode to 8-bit binary
+        var char = text.charAt(i);
+        if (char in charFrequencyMap) {
+          signal.push(charFrequencyMap[char]);
+        }
       }
-      return binarySignal;
+      return signal;
     }
 
     function playSound(signal) {
       var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      var oscillator1 = audioCtx.createOscillator();
-      var oscillator2 = audioCtx.createOscillator();
-      var gainNode1 = audioCtx.createGain();
-      var gainNode2 = audioCtx.createGain();
+      var oscillator = audioCtx.createOscillator();
+      var gainNode = audioCtx.createGain();
       
-      oscillator1.type = 'sine';
-      oscillator2.type = 'sine';
-      oscillator1.frequency.value = 1000; // Frequency for bit 0
-      oscillator2.frequency.value = 2000; // Frequency for bit 1
-
-      oscillator1.connect(gainNode1);
-      oscillator2.connect(gainNode2);
-      gainNode1.connect(audioCtx.destination);
-      gainNode2.connect(audioCtx.destination);
+      oscillator.type = 'sine';
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
       
-      var time = 0.1; // Duration of each bit (in seconds)
-
+      var time = 0.5; // Duration of each character (in seconds)
+      
       for (var i = 0; i < signal.length; i++) {
-        var bit = parseInt(signal[i]);
-        if (bit === 0) {
-          gainNode1.gain.setValueAtTime(1, audioCtx.currentTime + i * time);
-          gainNode2.gain.setValueAtTime(0, audioCtx.currentTime + i * time);
-        } else {
-          gainNode1.gain.setValueAtTime(0, audioCtx.currentTime + i * time);
-          gainNode2.gain.setValueAtTime(1, audioCtx.currentTime + i * time);
-        }
+        oscillator.frequency.setValueAtTime(signal[i], audioCtx.currentTime + i * time);
+        gainNode.gain.setValueAtTime(1, audioCtx.currentTime + i * time);
       }
 
-      oscillator1.start();
-      oscillator2.start();
-      oscillator1.stop(audioCtx.currentTime + time * signal.length);
-      oscillator2.stop(audioCtx.currentTime + time * signal.length);
+      oscillator.start();
+      oscillator.stop(audioCtx.currentTime + time * signal.length);
     }
 
     // Receiver side (decoding)
@@ -69,8 +87,7 @@
     var analyser = audioCtx.createAnalyser();
     analyser.fftSize = 2048;
     var dataArray = new Uint8Array(analyser.frequencyBinCount);
-    var bits = ''; // Store received bits
-    var bitDuration = 0.1; // Duration of each bit (in seconds)
+    var lastTime = 0;
 
     navigator.mediaDevices.getUserMedia({ audio: true })
       .then(function(stream) {
@@ -79,45 +96,38 @@
         setInterval(function(){
           analyser.getByteFrequencyData(dataArray);
           decodeSignal(dataArray);
-        }, bitDuration * 1000); // Run decoding every bit duration
+        }, 100);
       })
       .catch(function(err) {
         console.log('The following error occurred: ' + err);
       });
 
     function decodeSignal(signal) {
-      // Determine the dominant frequency
-      var dominantFrequency = getDominantFrequency(signal, audioCtx.sampleRate);
-      
-      // If the dominant frequency matches one of our predefined frequencies, classify it as 0 or 1
-      if (Math.abs(dominantFrequency - 1000) < 100) {
-        bits += '0';
-      } else if (Math.abs(dominantFrequency - 2000) < 100) {
-        bits += '1';
-      }
-
-      // If we've collected a full byte, decode it and display the character
-      if (bits.length >= 8) {
-        var charCode = parseInt(bits, 2);
-        var decodedChar = String.fromCharCode(charCode);
-        receiverDiv.innerHTML += decodedChar;
-        bits = ''; // Reset bits for the next character
-      }
-    }
-
-    function getDominantFrequency(signal, sampleRate) {
+      // Get dominant frequency
       var maxIndex = 0;
       var maxValue = -Infinity;
-      var frequencyResolution = sampleRate / analyser.fftSize;
-
       for (var i = 0; i < signal.length; i++) {
         if (signal[i] > maxValue) {
           maxIndex = i;
           maxValue = signal[i];
         }
       }
+      var dominantFrequency = maxIndex * audioCtx.sampleRate / analyser.fftSize;
 
-      return frequencyResolution * maxIndex;
+      // Find the character with the closest frequency
+      var closestChar = findClosestFrequencyChar(dominantFrequency);
+      if (closestChar !== null) {
+        receiverDiv.innerHTML += closestChar;
+      }
+    }
+
+    function findClosestFrequencyChar(frequency) {
+      for (var char in charFrequencyMap) {
+        if (charFrequencyMap[char] === frequency) {
+          return char;
+        }
+      }
+      return null;
     }
   </script>
 </body>
