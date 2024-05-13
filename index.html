@@ -3,17 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NightLite</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Звуковая передача данных</title>
+    <style>
+        #textInput {
+            width: 300px;
+            height: 100px;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
-    <canvas id="game-canvas"></canvas>
-    <div id="virtual-controls">
-        <button id="up-btn">Up</button>
-        <button id="left-btn">Left</button>
-        <button id="down-btn">Down</button>
-        <button id="right-btn">Right</button>
-    </div>
-    <script src="game.js" type="module"></script>
+    <textarea id="textInput" placeholder="Введите текст для передачи"></textarea>
+    <button onclick="sendData()">Отправить</button>
+    <button onclick="startListening()">Сканировать</button>
+    <button onclick="stopListening()">Остановить сканирование</button>
+    <div id="scanningStatus"></div>
+    <div id="receivedText"></div>
+    <div id="decodedText"></div>
+
+    <script>
+        var listening = false;
+        var analyser;
+        var micStream;
+
+        function sendData() {
+            var text = document.getElementById("textInput").value;
+            var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            var oscillator = audioCtx.createOscillator();
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(19000, audioCtx.currentTime); 
+            var gainNode = audioCtx.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+            oscillator.start();
+            gainNode.gain.linearRampToValueAtTime(1, audioCtx.currentTime + 0.01);
+            gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.1);
+        }
+
+        function startListening() {
+            var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioCtx.createAnalyser();
+            var microphone = audioCtx.createMediaStreamSource(stream);
+
+            if (!navigator.mediaDevices) {
+                alert('getUserMedia не поддерживается в вашем браузере');
+                return;
+            }
+
+            navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(function(stream) {
+                micStream = stream;
+                microphone.connect(analyser);
+                listening = true;
+                checkAudio();
+            })
+            .catch(function(err) { console.log(err.name + ": " + err.message); });
+        }
+
+        function stopListening() {
+            if (micStream) {
+                micStream.getTracks().forEach(track => track.stop());
+            }
+            listening = false;
+            document.getElementById("scanningStatus").innerText = "Сканирование остановлено";
+        }
+
+        function checkAudio() {
+            var bufferLength = analyser.fftSize;
+            var dataArray = new Uint8Array(bufferLength);
+            analyser.getByteFrequencyData(dataArray);
+
+            var isUltrasoundDetected = dataArray.some(function(val) {
+                return val > 200; 
+            });
+
+            if (isUltrasoundDetected) {
+                var receivedText = decodeAudio();
+                document.getElementById("receivedText").innerText = "Принятый текст: " + receivedText;
+            }
+
+            if (listening) {
+                requestAnimationFrame(checkAudio);
+                document.getElementById("scanningStatus").innerText = "Сканирование...";
+            } else {
+                document.getElementById("scanningStatus").innerText = "Сканирование остановлено";
+            }
+        }
+
+        function decodeAudio() {
+            var bufferLength = analyser.fftSize;
+            var dataArray = new Float32Array(bufferLength);
+            analyser.getFloatTimeDomainData(dataArray);
+            var sum = 0;
+            for (var i = 0; i < bufferLength; i++) {
+                sum += Math.abs(dataArray[i]);
+            }
+            var avg = sum / bufferLength;
+            var threshold = avg * 1.5;
+            var chunks = [];
+            var chunk = '';
+            for (var i = 0; i < bufferLength; i++) {
+                var val = Math.abs(dataArray[i]);
+                if (val > threshold) {
+                    chunk += '1';
+                } else {
+                    chunk += '0';
+                }
+                if (chunk.length == 8) {
+                    chunks.push(chunk);
+                    chunk = '';
+                }
+            }
+            var binaryString = chunks.join('');
+            var text = '';
+            for (var i = 0; i < binaryString.length; i += 8) {
+                text += String.fromCharCode(parseInt(binaryString.substr(i, 8), 2));
+            }
+            return text;
+        }
+    </script>
 </body>
 </html>
