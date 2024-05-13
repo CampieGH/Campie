@@ -10,6 +10,25 @@
             height: 100px;
             margin-bottom: 10px;
         }
+        #scanningStatus {
+            margin-bottom: 10px;
+        }
+        #indicator {
+            width: 20px;
+            height: 20px;
+            background-color: gray;
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse 1s infinite alternate;
+        }
+        @keyframes pulse {
+            from {
+                transform: scale(1);
+            }
+            to {
+                transform: scale(1.2);
+            }
+        }
     </style>
 </head>
 <body>
@@ -17,9 +36,8 @@
     <button onclick="sendData()">Отправить</button>
     <button onclick="startListening()">Сканировать</button>
     <button onclick="stopListening()">Остановить сканирование</button>
-    <div id="scanningStatus"></div>
+    <div id="scanningStatus">Сканирование: <span id="indicator"></span></div>
     <div id="receivedText"></div>
-    <div id="decodedText"></div>
 
     <script>
         var listening = false;
@@ -67,6 +85,7 @@
             }
             listening = false;
             document.getElementById("scanningStatus").innerText = "Сканирование остановлено";
+            document.getElementById("indicator").style.backgroundColor = "gray";
         }
 
         function checkAudio() {
@@ -81,11 +100,12 @@
             if (isUltrasoundDetected) {
                 var receivedText = decodeAudio();
                 document.getElementById("receivedText").innerText = "Принятый текст: " + receivedText;
+                document.getElementById("indicator").style.backgroundColor = "green";
             }
 
             if (listening) {
                 requestAnimationFrame(checkAudio);
-                document.getElementById("scanningStatus").innerText = "Сканирование...";
+                document.getElementById("scanningStatus").innerText = "Сканирование: ";
             } else {
                 document.getElementById("scanningStatus").innerText = "Сканирование остановлено";
             }
