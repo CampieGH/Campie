@@ -1,145 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Звуковая передача данных</title>
-    <style>
-        #textInput {
-            width: 300px;
-            height: 100px;
-            margin-bottom: 10px;
-        }
-        #scanningStatus {
-            margin-bottom: 10px;
-        }
-        #indicator {
-            width: 20px;
-            height: 20px;
-            background-color: gray;
-            border-radius: 50%;
-            display: inline-block;
-            animation: pulse 1s infinite alternate;
-        }
-        @keyframes pulse {
-            from {
-                transform: scale(1);
-            }
-            to {
-                transform: scale(1.2);
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Text to Sound Communication</title>
 </head>
 <body>
-    <textarea id="textInput" placeholder="Введите текст для передачи"></textarea>
-    <button onclick="sendData()">Отправить</button>
-    <button onclick="startListening()">Сканировать</button>
-    <button onclick="stopListening()">Остановить сканирование</button>
-    <div id="scanningStatus">Сканирование: <span id="indicator"></span></div>
-    <div id="receivedText"></div>
+  <textarea id="textInput" placeholder="Enter text to transmit"></textarea>
+  <button onclick="transmit()">Transmit</button>
+  <div id="receiver"></div>
 
-    <script>
-        var listening = false;
-        var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        var analyser;
-        var micStream;
+  <script>
+    function transmit() {
+      var text = document.getElementById('textInput').value;
+      var encoded = textToSignal(text);
+      playSound(encoded);
+    }
 
-        function sendData() {
-            var text = document.getElementById("textInput").value;
-            var oscillator = audioCtx.createOscillator();
-            oscillator.type = 'sine';
-            oscillator.frequency.setValueAtTime(1000, audioCtx.currentTime); // 1000 Гц
-            var gainNode = audioCtx.createGain();
-            oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
-            oscillator.start();
-            gainNode.gain.linearRampToValueAtTime(1, audioCtx.currentTime + 0.01);
-            gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.1);
-        }
+    function textToSignal(text) {
+      // Convert text to a signal, for simplicity, we'll just convert each character to its Unicode value
+      return text.split('').map(char => char.charCodeAt(0));
+    }
 
-        function startListening() {
-            analyser = audioCtx.createAnalyser();
-            if (!navigator.mediaDevices) {
-                alert('getUserMedia не поддерживается в вашем браузере');
-                return;
-            }
+    function playSound(signal) {
+      var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      var oscillator = audioCtx.createOscillator();
+      oscillator.type = 'sine';
+      oscillator.connect(audioCtx.destination);
+      
+      var time = 0.1; // Duration of each signal unit (in seconds)
+      
+      signal.forEach(code => {
+        oscillator.frequency.setValueAtTime(code * 100, audioCtx.currentTime);
+        audioCtx.currentTime += time;
+      });
 
-            navigator.mediaDevices.getUserMedia({ audio: true })
-            .then(function(stream) {
-                micStream = stream;
-                var microphone = audioCtx.createMediaStreamSource(stream);
-                microphone.connect(analyser);
-                listening = true;
-                checkAudio();
-            })
-            .catch(function(err) { console.log(err.name + ": " + err.message); });
-        }
+      oscillator.start();
+      oscillator.stop(audioCtx.currentTime + time * signal.length);
+    }
 
-        function stopListening() {
-            if (micStream) {
-                micStream.getTracks().forEach(track => track.stop());
-            }
-            listening = false;
-            document.getElementById("scanningStatus").innerText = "Сканирование остановлено";
-            document.getElementById("indicator").style.backgroundColor = "gray";
-        }
-
-        function checkAudio() {
-            var bufferLength = analyser.fftSize;
-            var dataArray = new Uint8Array(bufferLength);
-            analyser.getByteFrequencyData(dataArray);
-
-            var isSoundDetected = dataArray.some(function(val) {
-                return val > 128; // Установим порог на половину от максимального значения
-            });
-
-            if (isSoundDetected) {
-                var receivedText = decodeAudio();
-                document.getElementById("receivedText").innerText = "Принятый текст: " + receivedText;
-                document.getElementById("indicator").style.backgroundColor = "green";
-            }
-
-            if (listening) {
-                requestAnimationFrame(checkAudio);
-                document.getElementById("scanningStatus").innerText = "Сканирование: ";
-            } else {
-                document.getElementById("scanningStatus").innerText = "Сканирование остановлено";
-            }
-        }
-
-        function decodeAudio() {
-            var bufferLength = analyser.fftSize;
-            var dataArray = new Float32Array(bufferLength);
-            analyser.getFloatTimeDomainData(dataArray);
-            var sum = 0;
-            for (var i = 0; i < bufferLength; i++) {
-                sum += Math.abs(dataArray[i]);
-            }
-            var avg = sum / bufferLength;
-            var threshold = avg * 1.5;
-            var chunks = [];
-            var chunk = '';
-            for (var i = 0; i < bufferLength; i++) {
-                var val = Math.abs(dataArray[i]);
-                if (val > threshold) {
-                    chunk += '1';
-                } else {
-                    chunk += '0';
-                }
-                if (chunk.length == 8) {
-                    chunks.push(chunk);
-                    chunk = '';
-                }
-            }
-            var binaryString = chunks.join('');
-            var text = '';
-            for (var i = 0; i < binaryString.length; i += 8) {
-                text += String.fromCharCode(parseInt(binaryString.substr(i, 8), 2));
-            }
-            return text;
-        }
-    </script>
+    // Receiver side (decoding)
+    var receiverDiv = document.getElementById('receiver');
+    var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    var analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 2048;
+    var dataArray = new Uint8Array(analyser.frequencyBinCount);
+    navigator.mediaDevices.getUserMedia({ audio: true })
+      .then(function(stream) {
+        var source = audioCtx.createMediaStreamSource(stream);
+        source.connect(analyser);
+        setInterval(function(){
+          analyser.getByteFrequencyData(dataArray);
+          // Process received signal (dataArray) to decode
+          // For simplicity, let's just display the values
+          receiverDiv.innerHTML = Array.from(dataArray).join(', ');
+        }, 100);
+      })
+      .catch(function(err) {
+        console.log('The following error occurred: ' + err);
+      });
+  </script>
 </body>
 </html>
