@@ -19,28 +19,48 @@
 
     function textToSignal(text) {
       // Convert text to a signal
-      return text.split('').map(char => char.charCodeAt(0));
+      var binarySignal = '';
+      for (var i = 0; i < text.length; i++) {
+        var charCode = text.charCodeAt(i);
+        binarySignal += ('00000000' + charCode.toString(2)).slice(-8); // Convert charCode to 8-bit binary
+      }
+      return binarySignal;
     }
 
     function playSound(signal) {
       var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      var oscillator = audioCtx.createOscillator();
-      var gainNode = audioCtx.createGain();
-      oscillator.type = 'sine';
-      oscillator.connect(gainNode);
-      gainNode.connect(audioCtx.destination);
+      var oscillator1 = audioCtx.createOscillator();
+      var oscillator2 = audioCtx.createOscillator();
+      var gainNode1 = audioCtx.createGain();
+      var gainNode2 = audioCtx.createGain();
       
-      var time = 0.1; // Duration of each signal unit (in seconds)
-      var frequencyMultiplier = 100;
-      
-      signal.forEach(code => {
-        oscillator.frequency.setValueAtTime(code * frequencyMultiplier, audioCtx.currentTime);
-        gainNode.gain.setValueAtTime(1, audioCtx.currentTime);
-        audioCtx.currentTime += time;
-      });
+      oscillator1.type = 'sine';
+      oscillator2.type = 'sine';
+      oscillator1.frequency.value = 1000; // Frequency for bit 0
+      oscillator2.frequency.value = 2000; // Frequency for bit 1
 
-      oscillator.start();
-      oscillator.stop(audioCtx.currentTime + time * signal.length);
+      oscillator1.connect(gainNode1);
+      oscillator2.connect(gainNode2);
+      gainNode1.connect(audioCtx.destination);
+      gainNode2.connect(audioCtx.destination);
+      
+      var time = 0.1; // Duration of each bit (in seconds)
+
+      for (var i = 0; i < signal.length; i++) {
+        var bit = parseInt(signal[i]);
+        if (bit === 0) {
+          gainNode1.gain.setValueAtTime(1, audioCtx.currentTime + i * time);
+          gainNode2.gain.setValueAtTime(0, audioCtx.currentTime + i * time);
+        } else {
+          gainNode1.gain.setValueAtTime(0, audioCtx.currentTime + i * time);
+          gainNode2.gain.setValueAtTime(1, audioCtx.currentTime + i * time);
+        }
+      }
+
+      oscillator1.start();
+      oscillator2.start();
+      oscillator1.stop(audioCtx.currentTime + time * signal.length);
+      oscillator2.stop(audioCtx.currentTime + time * signal.length);
     }
 
     // Receiver side (decoding)
@@ -49,31 +69,55 @@
     var analyser = audioCtx.createAnalyser();
     analyser.fftSize = 2048;
     var dataArray = new Uint8Array(analyser.frequencyBinCount);
+    var bits = ''; // Store received bits
+    var bitDuration = 0.1; // Duration of each bit (in seconds)
+
     navigator.mediaDevices.getUserMedia({ audio: true })
       .then(function(stream) {
         var source = audioCtx.createMediaStreamSource(stream);
         source.connect(analyser);
         setInterval(function(){
           analyser.getByteFrequencyData(dataArray);
-          // Process received signal (dataArray) to decode
-          var decodedText = signalToText(dataArray);
-          receiverDiv.innerHTML = decodedText;
-        }, 100);
+          decodeSignal(dataArray);
+        }, bitDuration * 1000); // Run decoding every bit duration
       })
       .catch(function(err) {
         console.log('The following error occurred: ' + err);
       });
 
-    function signalToText(signal) {
-      // Convert the received signal back into text
-      var text = '';
-      signal.forEach(value => {
-        var charCode = Math.round(value / 100);
-        if (charCode >= 32 && charCode <= 126) {
-          text += String.fromCharCode(charCode);
+    function decodeSignal(signal) {
+      // Determine the dominant frequency
+      var dominantFrequency = getDominantFrequency(signal, audioCtx.sampleRate);
+      
+      // If the dominant frequency matches one of our predefined frequencies, classify it as 0 or 1
+      if (Math.abs(dominantFrequency - 1000) < 100) {
+        bits += '0';
+      } else if (Math.abs(dominantFrequency - 2000) < 100) {
+        bits += '1';
+      }
+
+      // If we've collected a full byte, decode it and display the character
+      if (bits.length >= 8) {
+        var charCode = parseInt(bits, 2);
+        var decodedChar = String.fromCharCode(charCode);
+        receiverDiv.innerHTML += decodedChar;
+        bits = ''; // Reset bits for the next character
+      }
+    }
+
+    function getDominantFrequency(signal, sampleRate) {
+      var maxIndex = 0;
+      var maxValue = -Infinity;
+      var frequencyResolution = sampleRate / analyser.fftSize;
+
+      for (var i = 0; i < signal.length; i++) {
+        if (signal[i] > maxValue) {
+          maxIndex = i;
+          maxValue = signal[i];
         }
-      });
-      return text;
+      }
+
+      return frequencyResolution * maxIndex;
     }
   </script>
 </body>
