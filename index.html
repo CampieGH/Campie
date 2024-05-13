@@ -41,15 +41,15 @@
 
     <script>
         var listening = false;
+        var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         var analyser;
         var micStream;
 
         function sendData() {
             var text = document.getElementById("textInput").value;
-            var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             var oscillator = audioCtx.createOscillator();
             oscillator.type = 'sine';
-            oscillator.frequency.setValueAtTime(19000, audioCtx.currentTime); 
+            oscillator.frequency.setValueAtTime(1000, audioCtx.currentTime); // 1000 Гц
             var gainNode = audioCtx.createGain();
             oscillator.connect(gainNode);
             gainNode.connect(audioCtx.destination);
@@ -60,10 +60,7 @@
         }
 
         function startListening() {
-            var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             analyser = audioCtx.createAnalyser();
-            var microphone = audioCtx.createMediaStreamSource(stream);
-
             if (!navigator.mediaDevices) {
                 alert('getUserMedia не поддерживается в вашем браузере');
                 return;
@@ -72,6 +69,7 @@
             navigator.mediaDevices.getUserMedia({ audio: true })
             .then(function(stream) {
                 micStream = stream;
+                var microphone = audioCtx.createMediaStreamSource(stream);
                 microphone.connect(analyser);
                 listening = true;
                 checkAudio();
@@ -93,11 +91,11 @@
             var dataArray = new Uint8Array(bufferLength);
             analyser.getByteFrequencyData(dataArray);
 
-            var isUltrasoundDetected = dataArray.some(function(val) {
-                return val > 200; 
+            var isSoundDetected = dataArray.some(function(val) {
+                return val > 128; // Установим порог на половину от максимального значения
             });
 
-            if (isUltrasoundDetected) {
+            if (isSoundDetected) {
                 var receivedText = decodeAudio();
                 document.getElementById("receivedText").innerText = "Принятый текст: " + receivedText;
                 document.getElementById("indicator").style.backgroundColor = "green";
