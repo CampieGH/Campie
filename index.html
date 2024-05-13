@@ -18,20 +18,24 @@
     }
 
     function textToSignal(text) {
-      // Convert text to a signal, for simplicity, we'll just convert each character to its Unicode value
+      // Convert text to a signal
       return text.split('').map(char => char.charCodeAt(0));
     }
 
     function playSound(signal) {
       var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       var oscillator = audioCtx.createOscillator();
+      var gainNode = audioCtx.createGain();
       oscillator.type = 'sine';
-      oscillator.connect(audioCtx.destination);
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
       
       var time = 0.1; // Duration of each signal unit (in seconds)
+      var frequencyMultiplier = 100;
       
       signal.forEach(code => {
-        oscillator.frequency.setValueAtTime(code * 100, audioCtx.currentTime);
+        oscillator.frequency.setValueAtTime(code * frequencyMultiplier, audioCtx.currentTime);
+        gainNode.gain.setValueAtTime(1, audioCtx.currentTime);
         audioCtx.currentTime += time;
       });
 
@@ -64,7 +68,10 @@
       // Convert the received signal back into text
       var text = '';
       signal.forEach(value => {
-        text += String.fromCharCode(Math.round(value / 100));
+        var charCode = Math.round(value / 100);
+        if (charCode >= 32 && charCode <= 126) {
+          text += String.fromCharCode(charCode);
+        }
       });
       return text;
     }
