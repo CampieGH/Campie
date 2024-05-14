@@ -34,17 +34,54 @@
     font-size: 24px;
   }
 
-  @keyframes rotate {
-    from { transform: rotateY(0deg); }
-    to { transform: rotateY(360deg); }
+  .wall {
+    position: absolute;
+    background-color: #666;
+    box-shadow: inset 0px 0px 20px rgba(0, 0, 0, 0.5);
+  }
+
+  .floor {
+    position: absolute;
+    background-color: #555;
+    width: 200px;
+    height: 200px;
+    transform: rotateX(90deg);
+  }
+
+  .light {
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.3);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    box-shadow: 0 0 20px 5px #fff;
+  }
+
+  .joystick {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background-color: rgba(255, 255, 255, 0.5);
+    padding: 10px;
+    border-radius: 10px;
   }
 </style>
 </head>
 <body>
 <div id="container"></div>
+<div class="joystick">
+  <button id="up">Up</button>
+  <button id="down">Down</button>
+  <button id="left">Left</button>
+  <button id="right">Right</button>
+</div>
 
 <script>
   const container = document.getElementById("container");
+  const joystick = document.querySelector(".joystick");
+
+  let positionX = 0;
+  let positionY = 0;
 
   function createRoom(x, y, z) {
     const room = document.createElement("div");
@@ -52,6 +89,29 @@
     room.style.transform = `translate3d(${x * 250}px, ${y * 250}px, ${z * 250}px)`;
     room.innerText = `Room ${x}-${y}-${z}`;
     container.appendChild(room);
+  }
+
+  function createWall(x, y, z, rotationY) {
+    const wall = document.createElement("div");
+    wall.className = "wall";
+    wall.style.width = "200px";
+    wall.style.height = "200px";
+    wall.style.transform = `translate3d(${x * 250}px, ${y * 250}px, ${z * 250}px) rotateY(${rotationY}deg)`;
+    container.appendChild(wall);
+  }
+
+  function createFloor(x, y, z) {
+    const floor = document.createElement("div");
+    floor.className = "floor";
+    floor.style.transform = `translate3d(${x * 250}px, ${y * 250}px, ${z * 250}px)`;
+    container.appendChild(floor);
+  }
+
+  function createLight(x, y, z) {
+    const light = document.createElement("div");
+    light.className = "light";
+    light.style.transform = `translate3d(${x * 250}px, ${y * 250}px, ${z * 250}px)`;
+    container.appendChild(light);
   }
 
   function generateRooms() {
@@ -64,7 +124,66 @@
     }
   }
 
-  generateRooms();
+  function generateWalls() {
+    // Generate walls on the perimeter of the space
+    for (let x = -5; x <= 5; x++) {
+      for (let z = -5; z <= 5; z++) {
+        if (x === -5 || x === 5 || z === -5 || z === 5) {
+          createWall(x, 0, z, x === -5 ? 180 : (x === 5 ? 0 : (z === -5 ? 90 : 270)));
+        }
+      }
+    }
+  }
+
+  function generateFloor() {
+    for (let x = -5; x <= 5; x++) {
+      for (let z = -5; z <= 5; z++) {
+        createFloor(x, 0, z);
+      }
+    }
+  }
+
+  function generateLights() {
+    createLight(0, 2, 0);
+    createLight(3, 2, 3);
+    createLight(-3, 2, -3);
+  }
+
+  function handleMovement(dirX, dirY) {
+    positionX += dirX;
+    positionY += dirY;
+
+    container.style.transform = `translate3d(${positionX * 250}px, ${positionY * 250}px, 0)`;
+  }
+
+  function init() {
+    generateRooms();
+    generateWalls();
+    generateFloor();
+    generateLights();
+
+    joystick.addEventListener("click", (e) => {
+      const direction = e.target.id;
+      switch (direction) {
+        case "up":
+          handleMovement(0, 1);
+          break;
+        case "down":
+          handleMovement(0, -1);
+          break;
+        case "left":
+          handleMovement(-1, 0);
+          break;
+        case "right":
+          handleMovement(1, 0);
+          break;
+        default:
+          break;
+      }
+    });
+  }
+
+  init();
 </script>
 </body>
 </html>
