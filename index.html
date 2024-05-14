@@ -3,129 +3,68 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Text to Sound Communication</title>
+<title>Random Room Generator</title>
+<style>
+  body {
+    margin: 0;
+    overflow: hidden;
+    perspective: 800px;
+    background-color: #000;
+    color: #fff;
+    font-family: Arial, sans-serif;
+  }
+
+  #container {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    transform-style: preserve-3d;
+    animation: rotate 20s infinite linear;
+  }
+
+  .room {
+    width: 200px;
+    height: 200px;
+    position: absolute;
+    background-color: #444;
+    border: 2px solid #666;
+    box-sizing: border-box;
+    text-align: center;
+    line-height: 200px;
+    font-size: 24px;
+  }
+
+  @keyframes rotate {
+    from { transform: rotateY(0deg); }
+    to { transform: rotateY(360deg); }
+  }
+</style>
 </head>
 <body>
-  <textarea id="textInput" placeholder="Enter text to transmit"></textarea>
-  <button onclick="transmit()">Transmit</button>
-  <div id="receiver"></div>
+<div id="container"></div>
 
-  <script>
-    // Object to store character to frequency mapping
-    var charFrequencyMap = {
-      'a': 500,
-      'b': 600,
-      'c': 700,
-      'd': 800,
-      'e': 900,
-      'f': 1000,
-      'g': 1100,
-      'h': 1200,
-      'i': 1300,
-      'j': 1400,
-      'k': 1500,
-      'l': 1600,
-      'm': 1700,
-      'n': 1800,
-      'o': 1900,
-      'p': 2000,
-      'q': 2100,
-      'r': 2200,
-      's': 2300,
-      't': 2400,
-      'u': 2500,
-      'v': 2600,
-      'w': 2700,
-      'x': 2800,
-      'y': 2900,
-      'z': 3000,
-      ' ': 3100, // space character
-      // Add more characters if needed
-    };
+<script>
+  const container = document.getElementById("container");
 
-    var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  function createRoom(x, y, z) {
+    const room = document.createElement("div");
+    room.className = "room";
+    room.style.transform = `translate3d(${x * 250}px, ${y * 250}px, ${z * 250}px)`;
+    room.innerText = `Room ${x}-${y}-${z}`;
+    container.appendChild(room);
+  }
 
-    function transmit() {
-      var text = document.getElementById('textInput').value.toLowerCase(); // Convert text to lowercase for simplicity
-      var encoded = textToSignal(text);
-      playSound(encoded);
-    }
-
-    function textToSignal(text) {
-      // Convert text to a signal
-      var signal = [];
-      for (var i = 0; i < text.length; i++) {
-        var char = text.charAt(i);
-        if (char in charFrequencyMap) {
-          signal.push(charFrequencyMap[char]);
+  function generateRooms() {
+    for (let x = -5; x <= 5; x++) {
+      for (let y = -5; y <= 5; y++) {
+        for (let z = -5; z <= 5; z++) {
+          createRoom(x, y, z);
         }
       }
-      return signal;
     }
+  }
 
-    function playSound(signal) {
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
-
-      for (var i = 0; i < signal.length; i++) {
-        var oscillator = audioCtx.createOscillator();
-        oscillator.type = 'sine';
-        oscillator.frequency.setValueAtTime(signal[i], audioCtx.currentTime);
-        oscillator.connect(audioCtx.destination);
-        oscillator.start();
-        oscillator.stop(audioCtx.currentTime + 0.5); // Each character plays for 0.5 seconds
-      }
-    }
-
-    // Receiver side (decoding)
-    var receiverDiv = document.getElementById('receiver');
-    var bufferSize = 2048;
-    var sampleRate = audioCtx.sampleRate;
-    var frequencyThreshold = 100; // Threshold for frequency matching
-
-    function decodeSignal(frequency) {
-      for (var char in charFrequencyMap) {
-        if (Math.abs(charFrequencyMap[char] - frequency) < frequencyThreshold) {
-          return char;
-        }
-      }
-      return '';
-    }
-
-    // Listen to audio input
-    navigator.mediaDevices.getUserMedia({ audio: true })
-      .then(function(stream) {
-        var audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        var analyser = audioContext.createAnalyser();
-        analyser.fftSize = bufferSize;
-        var microphone = audioContext.createMediaStreamSource(stream);
-        microphone.connect(analyser);
-        
-        var dataArray = new Uint8Array(analyser.frequencyBinCount);
-        
-        function updatePitch() {
-          analyser.getByteFrequencyData(dataArray);
-          var maxIndex = 0;
-          var maxValue = 0;
-          for (var i = 0; i < dataArray.length; i++) {
-            if (dataArray[i] > maxValue) {
-              maxIndex = i;
-              maxValue = dataArray[i];
-            }
-          }
-          var dominantFrequency = maxIndex * sampleRate / bufferSize;
-          var char = decodeSignal(dominantFrequency);
-          if (char !== '') {
-            receiverDiv.innerHTML += char;
-          }
-        }
-        
-        setInterval(updatePitch, 100); // Check frequency every 100ms
-      })
-      .catch(function(err) {
-        console.log('The following error occurred: ' + err);
-      });
-  </script>
+  generateRooms();
+</script>
 </body>
 </html>
