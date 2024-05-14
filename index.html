@@ -63,66 +63,138 @@
 
     function playSound(signal) {
       var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      var oscillator = audioCtx.createOscillator();
+      var gainNode = audioCtx.createGain();
+      
+      oscillator.type = 'sine';
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      
+      var time = 0.5; // Duration of each character (in seconds)
       
       for (var i = 0; i < signal.length; i++) {
-        var oscillator = audioCtx.createOscillator();
-        oscillator.type = 'sine';
-        oscillator.frequency.setValueAtTime(signal[i], audioCtx.currentTime + i);
-        oscillator.connect(audioCtx.destination);
-        oscillator.start();
-        oscillator.stop(audioCtx.currentTime + 1); // Each character plays for 1 second
+        oscillator.frequency.setValueAtTime(signal[i], audioCtx.currentTime + i * time);
+        gainNode.gain.setValueAtTime(1, audioCtx.currentTime + i * time);
       }
+
+      oscillator.start();
+      oscillator.stop(audioCtx.currentTime + time * signal.length);
     }
 
     // Receiver side (decoding)
     var receiverDiv = document.getElementById('receiver');
     var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    var scriptNode = audioCtx.createScriptProcessor(2048, 1, 1);
     var bufferSize = 2048;
     var sampleRate = audioCtx.sampleRate;
-    var frequencyThreshold = 100; // Threshold for frequency matching
+    var frequencyData = new Uint8Array(bufferSize);
+    var frequencyThreshold = 10; // Threshold for frequency matching
 
-    function decodeSignal(frequency) {
+    scriptNode.onaudioprocess = function(audioProcessingEvent) {
+      var inputBuffer = audioProcessingEvent.inputBuffer;
+      var inputData = inputBuffer.getChannelData(0);
+
+      // Calculate FFT
+      var fft = new FFT(bufferSize, sampleRate);
+      fft.forward(inputData);
+
+      // Get frequency data
+      fft.getFrequencyData(frequencyData);
+
+      // Find dominant frequency
+      var maxIndex = 0;
+      var maxValue = -Infinity;
+      for (var i = 0; i < frequencyData.length; i++) {
+        if (frequencyData[i] > maxValue) {
+          maxIndex = i;
+          maxValue = frequencyData[i];
+        }
+      }
+      var dominantFrequency = maxIndex * sampleRate / bufferSize;
+
+      // Find closest character frequency
+      var closestChar = findClosestFrequencyChar(dominantFrequency);
+      if (closestChar !== null) {
+        receiverDiv.innerHTML += closestChar;
+      }
+    };
+
+    // Connect the script processor node to audio context
+    scriptNode.connect(audioCtx.destination);
+
+    function findClosestFrequencyChar(frequency) {
       for (var char in charFrequencyMap) {
         if (Math.abs(charFrequencyMap[char] - frequency) < frequencyThreshold) {
           return char;
         }
       }
-      return '';
+      return null;
     }
 
-    // Listen to audio input
-    navigator.mediaDevices.getUserMedia({ audio: true })
-      .then(function(stream) {
-        var audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        var analyser = audioContext.createAnalyser();
-        analyser.fftSize = bufferSize;
-        var microphone = audioContext.createMediaStreamSource(stream);
-        microphone.connect(analyser);
-        
-        var dataArray = new Uint8Array(analyser.frequencyBinCount);
-        
-        function updatePitch() {
-          analyser.getByteFrequencyData(dataArray);
-          var maxIndex = 0;
-          var maxValue = 0;
-          for (var i = 0; i < dataArray.length; i++) {
-            if (dataArray[i] > maxValue) {
-              maxIndex = i;
-              maxValue = dataArray[i];
-            }
+    // FFT function for frequency analysis
+    function FFT(bufferSize, sampleRate) {
+      this.bufferSize = bufferSize;
+      this.sampleRate = sampleRate;
+      this.bandwidth = 2 / bufferSize * (sampleRate / 2);
+      this.spectrum = new Float32Array(bufferSize / 2);
+      this.real = new Float32Array(bufferSize);
+      this.imag = new Float32Array(bufferSize);
+      this.peakBand = 0;
+      this.peak = 0;
+    }
+
+    FFT.prototype.forward = function(buffer) {
+      var n = this.bufferSize / 2;
+      var spectrum = this.spectrum;
+      var real = this.real;
+      var imag = this.imag;
+      var k = Math.floor(Math.log(n) / Math.LN2);
+      var scale = 1 / n;
+
+      this.peak = 0;
+      this.peakBand = 0;
+      for (var i = 0; i < n; i++) {
+        imag[i] = 0;
+        real[i] = buffer[i] * scale;
+      }
+
+      var halfSize = 1;
+      for (var i = 1; i <= k; i++) {
+        halfSize *= 2;
+        var phaseShiftStepReal = Math.cos(-2 * Math.PI / halfSize);
+        var phaseShiftStepImag = Math.sin(-2 * Math.PI / halfSize);
+        var currentPhaseShiftReal = 1;
+        var currentPhaseShiftImag = 0;
+        for (var fftStep = 0; fftStep < halfSize; fftStep++) {
+          for (var i = fftStep; i < n; i += halfSize * 2) {
+            var off = i + halfSize;
+            var tr = (currentPhaseShiftReal * real[off]) - (currentPhaseShiftImag * imag[off]);
+            var ti = (currentPhaseShiftReal * imag[off]) + (currentPhaseShiftImag * real[off]);
+            real[off] = real[i] - tr;
+            imag[off] = imag[i] - ti;
+            real[i] += tr;
+            imag[i] += ti;
           }
-          var dominantFrequency = maxIndex * sampleRate / bufferSize;
-          var char = decodeSignal(dominantFrequency);
-          if (char !== '') {
-            receiverDiv.innerHTML += char;
-          }
+          var tmpReal = currentPhaseShiftReal;
+          currentPhaseShiftReal = (tmpReal * phaseShiftStepReal) - (currentPhaseShiftImag * phaseShiftStepImag);
+          currentPhaseShiftImag = (tmpReal * phaseShiftStepImag) + (currentPhaseShiftImag * phaseShiftStepReal);
         }
-        
-        setInterval(updatePitch, 100); // Check frequency every 100ms
-      })
-      .catch(function(err) {
-        console.log('The following error occurred: ' + err);
-      });
+      }
+
+      for (var i = 0; i < n; i++) {
+        spectrum[i] = 2 * Math.sqrt(real[i] * real[i] + imag[i] * imag[i]) / n;
+        if (spectrum[i] > this.peak) {
+          this.peakBand = i;
+          this.peak = spectrum[i];
+        }
+      }
+    };
+
+    FFT.prototype.getFrequencyData = function(array) {
+      for (var i = 0; i < this.spectrum.length; i++) {
+        array[i] = this.spectrum[i];
+      }
+    };
   </script>
 </body>
 </html>
