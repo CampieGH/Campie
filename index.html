@@ -1,133 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Doom-like 2.5D</title>
-<style>
-  body {
-    margin: 0;
-    overflow: hidden;
-    background-color: #000;
-    color: #fff;
-    font-family: Arial, sans-serif;
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mike - Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
 
-  #container {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    perspective: 500px;
-    overflow: hidden;
-  }
+        .chat-container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
 
-  #player {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 20px;
-    height: 20px;
-    background-color: #fff;
-    transform: translate(-50%, -50%);
-  }
+        .chat-box {
+            height: 300px;
+            overflow-y: scroll;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
 
-  .wall {
-    position: absolute;
-    background-color: #666;
-    width: 50px;
-    height: 50px;
-    border: 2px solid #000;
-  }
-</style>
+        #user-input {
+            width: calc(100% - 60px);
+            padding: 5px;
+            margin-right: 10px;
+        }
+
+        button {
+            padding: 5px 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        .user-message {
+            background-color: #f1f1f1;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .bot-message {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
-<div id="container">
-  <div id="player"></div>
-</div>
+    <div class="chat-container">
+        <div class="chat-box" id="chat-box"></div>
+        <input type="text" id="user-input" placeholder="Type a message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+    <script>
+        function sendMessage() {
+            var userInput = document.getElementById("user-input").value;
+            if (userInput.trim() === "") return;
 
-<script>
-  const container = document.getElementById("container");
-  const player = document.getElementById("player");
+            var chatBox = document.getElementById("chat-box");
+            var userMessage = `<div class="user-message">${userInput}</div>`;
+            chatBox.innerHTML += userMessage;
 
-  // Define the map
-  const map = [
-    "1111111111111111111111111",
-    "1                        1",
-    "1      1        1        1",
-    "1      1        1        1",
-    "1      1        1        1",
-    "1      1        1        1",
-    "1      1        1        1",
-    "1                        1",
-    "1111111111111111111111111",
-  ];
+            // Simulate Mike's response
+            var botResponse = simulateMikeResponse(userInput);
+            var botMessage = `<div class="bot-message">${botResponse}</div>`;
+            chatBox.innerHTML += botMessage;
 
-  // Create walls based on the map
-  function createWalls() {
-    for (let y = 0; y < map.length; y++) {
-      for (let x = 0; x < map[y].length; x++) {
-        if (map[y][x] === "1") {
-          const wall = document.createElement("div");
-          wall.className = "wall";
-          wall.style.top = `${y * 50}px`;
-          wall.style.left = `${x * 50}px`;
-          container.appendChild(wall);
+            // Scroll to the bottom of the chat box
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Clear user input
+            document.getElementById("user-input").value = "";
         }
-      }
-    }
-  }
 
-  // Handle player movement
-  function movePlayer(dx, dy) {
-    const playerRect = player.getBoundingClientRect();
-    const containerRect = container.getBoundingClientRect();
-
-    const newX = playerRect.left + dx;
-    const newY = playerRect.top + dy;
-
-    // Check collision with walls
-    const walls = document.querySelectorAll(".wall");
-    let canMove = true;
-    walls.forEach(wall => {
-      const wallRect = wall.getBoundingClientRect();
-      if (
-        newX < wallRect.right &&
-        newX + playerRect.width > wallRect.left &&
-        newY < wallRect.bottom &&
-        newY + playerRect.height > wallRect.top
-      ) {
-        canMove = false;
-      }
-    });
-
-    if (canMove) {
-      player.style.left = `${Math.max(containerRect.left, Math.min(containerRect.right - playerRect.width, newX))}px`;
-      player.style.top = `${Math.max(containerRect.top, Math.min(containerRect.bottom - playerRect.height, newY))}px`;
-    }
-  }
-
-  // Keyboard controls
-  document.addEventListener("keydown", (e) => {
-    switch (e.key) {
-      case "ArrowUp":
-        movePlayer(0, -5);
-        break;
-      case "ArrowDown":
-        movePlayer(0, 5);
-        break;
-      case "ArrowLeft":
-        movePlayer(-5, 0);
-        break;
-      case "ArrowRight":
-        movePlayer(5, 0);
-        break;
-      default:
-        break;
-    }
-  });
-
-  // Initialize the game
-  createWalls();
-</script>
+        function simulateMikeResponse(userInput) {
+            // Simulate Mike's response based on user input
+            // You can replace this with any logic or actual API call to a language model
+            return "Mike: I'm just a simulation, but I would respond intelligently!";
+        }
+    </script>
 </body>
 </html>
