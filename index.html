@@ -3,147 +3,131 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>3D Room</title>
+<title>Doom-like 2.5D</title>
 <style>
   body {
     margin: 0;
     overflow: hidden;
-    perspective: 800px;
     background-color: #000;
     color: #fff;
     font-family: Arial, sans-serif;
   }
 
   #container {
-    width: 100%;
-    height: 100%;
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    perspective: 500px;
+    overflow: hidden;
+  }
+
+  #player {
     position: absolute;
-    transform-style: preserve-3d;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    background-color: #fff;
+    transform: translate(-50%, -50%);
   }
 
   .wall {
     position: absolute;
     background-color: #666;
-    box-shadow: inset 0px 0px 20px rgba(0, 0, 0, 0.5);
-    width: 200px;
-    height: 200px;
-  }
-
-  .floor {
-    position: absolute;
-    background-color: #555;
-    width: 200px;
-    height: 200px;
-    transform: rotateX(90deg);
-  }
-
-  .light {
-    position: absolute;
-    background-color: rgba(255, 255, 255, 0.3);
     width: 50px;
     height: 50px;
-    border-radius: 50%;
-    box-shadow: 0 0 20px 5px #fff;
-  }
-
-  .joystick {
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    background-color: rgba(255, 255, 255, 0.5);
-    padding: 10px;
-    border-radius: 10px;
+    border: 2px solid #000;
   }
 </style>
 </head>
 <body>
-<div id="container"></div>
-<div class="joystick">
-  <button id="up">Up</button>
-  <button id="down">Down</button>
-  <button id="left">Left</button>
-  <button id="right">Right</button>
+<div id="container">
+  <div id="player"></div>
 </div>
 
 <script>
   const container = document.getElementById("container");
-  const joystick = document.querySelector(".joystick");
+  const player = document.getElementById("player");
 
-  let positionX = 0;
-  let positionY = 0;
+  // Define the map
+  const map = [
+    "1111111111111111111111111",
+    "1                        1",
+    "1      1        1        1",
+    "1      1        1        1",
+    "1      1        1        1",
+    "1      1        1        1",
+    "1      1        1        1",
+    "1                        1",
+    "1111111111111111111111111",
+  ];
 
-  function createWall(x, y, z, rotationY) {
-    const wall = document.createElement("div");
-    wall.className = "wall";
-    wall.style.transform = `translate3d(${x * 250}px, ${y * 250}px, ${z * 250}px) rotateY(${rotationY}deg)`;
-    container.appendChild(wall);
-  }
-
-  function createFloor(x, y, z) {
-    const floor = document.createElement("div");
-    floor.className = "floor";
-    floor.style.transform = `translate3d(${x * 250}px, ${y * 250}px, ${z * 250}px)`;
-    container.appendChild(floor);
-  }
-
-  function createLight(x, y, z) {
-    const light = document.createElement("div");
-    light.className = "light";
-    light.style.transform = `translate3d(${x * 250}px, ${y * 250}px, ${z * 250}px)`;
-    container.appendChild(light);
-  }
-
-  function generateRoom() {
-    // Generate walls
-    for (let x = -5; x <= 5; x++) {
-      for (let z = -5; z <= 5; z++) {
-        if (x === -5 || x === 5 || z === -5 || z === 5) {
-          createWall(x, 0, z, x === -5 ? 90 : (x === 5 ? -90 : (z === -5 ? 0 : 180)));
+  // Create walls based on the map
+  function createWalls() {
+    for (let y = 0; y < map.length; y++) {
+      for (let x = 0; x < map[y].length; x++) {
+        if (map[y][x] === "1") {
+          const wall = document.createElement("div");
+          wall.className = "wall";
+          wall.style.top = `${y * 50}px`;
+          wall.style.left = `${x * 50}px`;
+          container.appendChild(wall);
         }
       }
     }
-
-    // Generate floor
-    createFloor(0, -1, 0);
-
-    // Generate lights
-    createLight(0, 2, 0);
-    createLight(3, 2, 3);
-    createLight(-3, 2, -3);
   }
 
-  function handleMovement(dirX, dirY) {
-    positionX += dirX;
-    positionY += dirY;
+  // Handle player movement
+  function movePlayer(dx, dy) {
+    const playerRect = player.getBoundingClientRect();
+    const containerRect = container.getBoundingClientRect();
 
-    container.style.transform = `translate3d(${positionX * 250}px, ${positionY * 250}px, 0)`;
-  }
+    const newX = playerRect.left + dx;
+    const newY = playerRect.top + dy;
 
-  function init() {
-    generateRoom();
-
-    joystick.addEventListener("click", (e) => {
-      const direction = e.target.id;
-      switch (direction) {
-        case "up":
-          handleMovement(0, -1);
-          break;
-        case "down":
-          handleMovement(0, 1);
-          break;
-        case "left":
-          handleMovement(-1, 0);
-          break;
-        case "right":
-          handleMovement(1, 0);
-          break;
-        default:
-          break;
+    // Check collision with walls
+    const walls = document.querySelectorAll(".wall");
+    let canMove = true;
+    walls.forEach(wall => {
+      const wallRect = wall.getBoundingClientRect();
+      if (
+        newX < wallRect.right &&
+        newX + playerRect.width > wallRect.left &&
+        newY < wallRect.bottom &&
+        newY + playerRect.height > wallRect.top
+      ) {
+        canMove = false;
       }
     });
+
+    if (canMove) {
+      player.style.left = `${Math.max(containerRect.left, Math.min(containerRect.right - playerRect.width, newX))}px`;
+      player.style.top = `${Math.max(containerRect.top, Math.min(containerRect.bottom - playerRect.height, newY))}px`;
+    }
   }
 
-  init();
+  // Keyboard controls
+  document.addEventListener("keydown", (e) => {
+    switch (e.key) {
+      case "ArrowUp":
+        movePlayer(0, -5);
+        break;
+      case "ArrowDown":
+        movePlayer(0, 5);
+        break;
+      case "ArrowLeft":
+        movePlayer(-5, 0);
+        break;
+      case "ArrowRight":
+        movePlayer(5, 0);
+        break;
+      default:
+        break;
+    }
+  });
+
+  // Initialize the game
+  createWalls();
 </script>
 </body>
 </html>
