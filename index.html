@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Random Room Generator</title>
+<title>3D Room</title>
 <style>
   body {
     margin: 0;
@@ -19,25 +19,14 @@
     height: 100%;
     position: absolute;
     transform-style: preserve-3d;
-    animation: rotate 20s infinite linear;
-  }
-
-  .room {
-    width: 200px;
-    height: 200px;
-    position: absolute;
-    background-color: #444;
-    border: 2px solid #666;
-    box-sizing: border-box;
-    text-align: center;
-    line-height: 200px;
-    font-size: 24px;
   }
 
   .wall {
     position: absolute;
     background-color: #666;
     box-shadow: inset 0px 0px 20px rgba(0, 0, 0, 0.5);
+    width: 200px;
+    height: 200px;
   }
 
   .floor {
@@ -83,19 +72,9 @@
   let positionX = 0;
   let positionY = 0;
 
-  function createRoom(x, y, z) {
-    const room = document.createElement("div");
-    room.className = "room";
-    room.style.transform = `translate3d(${x * 250}px, ${y * 250}px, ${z * 250}px)`;
-    room.innerText = `Room ${x}-${y}-${z}`;
-    container.appendChild(room);
-  }
-
   function createWall(x, y, z, rotationY) {
     const wall = document.createElement("div");
     wall.className = "wall";
-    wall.style.width = "200px";
-    wall.style.height = "200px";
     wall.style.transform = `translate3d(${x * 250}px, ${y * 250}px, ${z * 250}px) rotateY(${rotationY}deg)`;
     container.appendChild(wall);
   }
@@ -114,36 +93,20 @@
     container.appendChild(light);
   }
 
-  function generateRooms() {
-    for (let x = -5; x <= 5; x++) {
-      for (let y = -5; y <= 5; y++) {
-        for (let z = -5; z <= 5; z++) {
-          createRoom(x, y, z);
-        }
-      }
-    }
-  }
-
-  function generateWalls() {
-    // Generate walls on the perimeter of the space
+  function generateRoom() {
+    // Generate walls
     for (let x = -5; x <= 5; x++) {
       for (let z = -5; z <= 5; z++) {
         if (x === -5 || x === 5 || z === -5 || z === 5) {
-          createWall(x, 0, z, x === -5 ? 180 : (x === 5 ? 0 : (z === -5 ? 90 : 270)));
+          createWall(x, 0, z, x === -5 ? 90 : (x === 5 ? -90 : (z === -5 ? 0 : 180)));
         }
       }
     }
-  }
 
-  function generateFloor() {
-    for (let x = -5; x <= 5; x++) {
-      for (let z = -5; z <= 5; z++) {
-        createFloor(x, 0, z);
-      }
-    }
-  }
+    // Generate floor
+    createFloor(0, -1, 0);
 
-  function generateLights() {
+    // Generate lights
     createLight(0, 2, 0);
     createLight(3, 2, 3);
     createLight(-3, 2, -3);
@@ -157,19 +120,16 @@
   }
 
   function init() {
-    generateRooms();
-    generateWalls();
-    generateFloor();
-    generateLights();
+    generateRoom();
 
     joystick.addEventListener("click", (e) => {
       const direction = e.target.id;
       switch (direction) {
         case "up":
-          handleMovement(0, 1);
+          handleMovement(0, -1);
           break;
         case "down":
-          handleMovement(0, -1);
+          handleMovement(0, 1);
           break;
         case "left":
           handleMovement(-1, 0);
