@@ -119,10 +119,29 @@
             font-size: 2rem;
         }
 
+        .social-icons a {
+            margin: 10px;
+            display: inline-block;
+        }
+
         .social-icons img {
             width: 50px;
             height: 50px;
-            margin: 10px;
+        }
+
+        /* All Music Platforms Button */
+        #all-platforms {
+            margin-top: 30px;
+        }
+
+        #all-platforms a {
+            background: #e74c3c;
+            color: #fff;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            display: inline-block;
         }
 
         /* Contact Section */
@@ -198,7 +217,65 @@
         <h2>Latest Releases</h2>
         <div class="release">
             <img src="https://via.placeholder.com/300" alt="Album Cover">
-            <h3>Album Nam
+            <h3>Album Name</h3>
+            <p>Release Date: August 17, 2024</p>
+            <div class="links">
+                <a href="#">Spotify</a>
+                <a href="#">Apple Music</a>
+                <a href="#">SoundCloud</a>
+            </div>
+        </div>
+        <!-- Add more releases as needed -->
+        <div id="all-platforms">
+            <a href="#platforms">See all music platforms</a>
+        </div>
+    </section>
+
+    <!-- Social Media Section -->
+    <section id="social">
+        <h2>Follow Campie</h2>
+        <div class="social-icons">
+            <a href="#"><img src="https://via.placeholder.com/50" alt="Telegram"></a>
+            <a href="#"><img src="https://via.placeholder.com/50" alt="YouTube"></a>
+            <a href="#"><img src="https://via.placeholder.com/50" alt="Instagram"></a>
+            <a href="#"><img src="https://via.placeholder.com/50" alt="Spotify"></a>
+            <a href="#"><img src="https://via.placeholder.com/50" alt="Genius"></a>
+        </div>
+    </section>
+
+    <!-- All Music Platforms Section -->
+    <section id="platforms" style="padding: 50px; background: #f4f4f4; text-align: center;">
+        <h2>Available on All Major Music Platforms</h2>
+        <div class="social-icons">
+            <a href="#"><img src="https://via.placeholder.com/50" alt="Spotify"></a>
+            <a href="#"><img src="https://via.placeholder.com/50" alt="Apple Music"></a>
+            <a href="#"><img src="https://via.placeholder.com/50" alt="SoundCloud"></a>
+            <a href="#"><img src="https://via.placeholder.com/50" alt="VK Music"></a>
+            <a href="#"><img src="https://via.placeholder.com/50" alt="Yandex Music"></a>
+            <a href="#"><img src="https://via.placeholder.com/50" alt="SberZvuk"></a>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact">
+        <h2>Contact</h2>
+        <p>For bookings and inquiries, please use the form below:</p>
+        <form action="submit_form.php" method="POST">
+            <input type="text" name="name" placeholder="Your Name" required>
+            <input type="email" name="email" placeholder="Your Email" required>
+            <textarea name="message" placeholder="Your Message" required></textarea>
+            <button type="submit">Send Message</button>
+        </form>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Campie Music. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>
+
 
 <!--
 <!DOCTYPE html>
