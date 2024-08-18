@@ -154,32 +154,38 @@
         <!-- Header Section -->
         <header>
             <div class="hero">
-                <h1>Campie Music</h1>
-                <p>New Single Out Now!</p>
-                <a href="#music" class="button">Listen Now</a>
+                <h1 id="title-en">Campie Music</h1>
+                <h1 id="title-ru" style="display: none;">Музыка Campie</h1>
+                <p id="subtitle-en">New Single "Changing" Out Now!</p>
+                <p id="subtitle-ru" style="display: none;">Новый сингл "Changing" уже доступен!</p>
+                <a href="#music" class="button" id="listen-now-en">Listen Now</a>
+                <a href="#music" class="button" id="listen-now-ru" style="display: none;">Слушать сейчас</a>
             </div>
         </header>
 
         <!-- Music Section -->
         <section id="music">
-            <h2>Latest Releases</h2>
+            <h2 id="music-title-en">Latest Releases</h2>
+            <h2 id="music-title-ru" style="display: none;">Последние релизы</h2>
             <div class="music-embed">
                 <!-- Spotify Embed -->
-                <iframe src="https://open.spotify.com/embed/album/1DFixLWuPkv3KT3TnV35m3" width="100%" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+                <iframe src="https://open.spotify.com/embed/track/7z6mbyxvf7zRbxVHD7oj7o" width="100%" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
             </div>
             <div class="music-embed">
                 <!-- YouTube Embed -->
-                <iframe width="100%" height="315" src="https://www.youtube.com/embed/2Vv-BfVoq4g" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <iframe width="100%" height="315" src="https://www.youtube.com/embed/TsR49zPdWq8" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
             <div class="music-embed">
                 <!-- Genius Lyrics Link -->
-                <a href="https://genius.com/Ed-sheeran-perfect-lyrics" class="button">View Lyrics on Genius</a>
+                <a href="https://genius.com/Campie-changing-lyrics" class="button" id="genius-link-en">View Lyrics on Genius</a>
+                <a href="https://genius.com/Campie-changing-lyrics" class="button" id="genius-link-ru" style="display: none;">Посмотреть текст на Genius</a>
             </div>
         </section>
 
         <!-- Social Media Section -->
         <section id="social">
-            <h2>Follow Campie</h2>
+            <h2 id="follow-title-en">Follow Campie</h2>
+            <h2 id="follow-title-ru" style="display: none;">Подписывайтесь на Campie</h2>
             <div class="social-icons">
                 <a href="#"><img src="https://via.placeholder.com/50" alt="Telegram"></a>
                 <a href="#"><img src="https://via.placeholder.com/50" alt="YouTube"></a>
@@ -188,20 +194,26 @@
                 <a href="#"><img src="https://via.placeholder.com/50" alt="Genius"></a>
             </div>
             <div id="all-platforms">
-                <a href="#platforms" class="button">See all music platforms</a>
+                <a href="#platforms" class="button" id="all-platforms-en">See all music platforms</a>
+                <a href="#platforms" class="button" id="all-platforms-ru" style="display: none;">Смотреть все музыкальные платформы</a>
             </div>
         </section>
 
         <!-- News Section -->
         <section id="news">
-            <h2>Latest News</h2>
+            <h2 id="news-title-en">Latest News</h2>
+            <h2 id="news-title-ru" style="display: none;">Последние новости</h2>
             <div class="news-item">
-                <h3>New Album Release - August 2024</h3>
-                <p>Check out Campie's latest album now available on all major platforms.</p>
+                <h3 id="news1-title-en">New Album Release - August 2024</h3>
+                <h3 id="news1-title-ru" style="display: none;">Новый альбом - Август 2024</h3>
+                <p id="news1-text-en">Check out Campie's latest album now available on all major platforms.</p>
+                <p id="news1-text-ru" style="display: none;">Слушайте новый альбом Campie на всех основных платформах.</p>
             </div>
             <div class="news-item">
-                <h3>Live Performance at XYZ Festival</h3>
-                <p>Join Campie at the XYZ Festival on September 10, 2024.</p>
+                <h3 id="news2-title-en">Live Performance at XYZ Festival</h3>
+                <h3 id="news2-title-ru" style="display: none;">Выступление на XYZ Фестивале</h3>
+                <p id="news2-text-en">Join Campie at the XYZ Festival on September 10, 2024.</p>
+                <p id="news2-text-ru" style="display: none;">Присоединяйтесь к Campie на фестивале XYZ 10 сентября 2024 года.</p>
             </div>
         </section>
 
@@ -216,119 +228,46 @@
         function selectLanguage(lang) {
             document.getElementById('language-selection').style.display = 'none';
             document.getElementById('main-content').style.display = 'block';
-            // Implement language change here based on 'lang' (en or ru)
+
+            if (lang === 'ru') {
+                            // Hide English content and show Russian content
+                document.getElementById('title-en').style.display = 'none';
+                document.getElementById('title-ru').style.display = 'block';
+                document.getElementById('subtitle-en').style.display = 'none';
+                document.getElementById('subtitle-ru').style.display = 'block';
+                document.getElementById('listen-now-en').style.display = 'none';
+                document.getElementById('listen-now-ru').style.display = 'block';
+
+                document.getElementById('music-title-en').style.display = 'none';
+                document.getElementById('music-title-ru').style.display = 'block';
+
+                document.getElementById('genius-link-en').style.display = 'none';
+                document.getElementById('genius-link-ru').style.display = 'block';
+
+                document.getElementById('follow-title-en').style.display = 'none';
+                document.getElementById('follow-title-ru').style.display = 'block';
+
+                document.getElementById('all-platforms-en').style.display = 'none';
+                document.getElementById('all-platforms-ru').style.display = 'block';
+
+                document.getElementById('news-title-en').style.display = 'none';
+                document.getElementById('news-title-ru').style.display = 'block';
+
+                document.getElementById('news1-title-en').style.display = 'none';
+                document.getElementById('news1-title-ru').style.display = 'block';
+                document.getElementById('news1-text-en').style.display = 'none';
+                document.getElementById('news1-text-ru').style.display = 'block';
+
+                document.getElementById('news2-title-en').style.display = 'none';
+                document.getElementById('news2-title-ru').style.display = 'block';
+                document.getElementById('news2-text-en').style.display = 'none';
+                document.getElementById('news2-text-ru').style.display = 'block';
+            } else {
+                // Keep English content visible (default state)
+                // No need to do anything as English is the default
+            }
         }
     </script>
 
 </body>
 </html>
-
-<!--
-<!DOCTYPE html>
-<html lang="en-us">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Unity WebGL Player | Rooms</title>
-    <link rel="shortcut icon" href="TemplateData/favicon.ico">
-    <link rel="stylesheet" href="TemplateData/style.css">
-  </head>
-  <body>
-    <div id="unity-container" class="unity-desktop">
-      <canvas id="unity-canvas" width=960 height=600></canvas>
-      <div id="unity-loading-bar">
-        <div id="unity-logo"></div>
-        <div id="unity-progress-bar-empty">
-          <div id="unity-progress-bar-full"></div>
-        </div>
-      </div>
-      <div id="unity-warning"> </div>
-      <div id="unity-footer">
-        <div id="unity-webgl-logo"></div>
-        <div id="unity-fullscreen-button"></div>
-        <div id="unity-build-title">Rooms</div>
-      </div>
-    </div>
-    <script>
-      var container = document.querySelector("#unity-container");
-      var canvas = document.querySelector("#unity-canvas");
-      var loadingBar = document.querySelector("#unity-loading-bar");
-      var progressBarFull = document.querySelector("#unity-progress-bar-full");
-      var fullscreenButton = document.querySelector("#unity-fullscreen-button");
-      var warningBanner = document.querySelector("#unity-warning");
-
-      // Shows a temporary message banner/ribbon for a few seconds, or
-      // a permanent error message on top of the canvas if type=='error'.
-      // If type=='warning', a yellow highlight color is used.
-      // Modify or remove this function to customize the visually presented
-      // way that non-critical warnings and error messages are presented to the
-      // user.
-      function unityShowBanner(msg, type) {
-        function updateBannerVisibility() {
-          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
-        }
-        var div = document.createElement('div');
-        div.innerHTML = msg;
-        warningBanner.appendChild(div);
-        if (type == 'error') div.style = 'background: red; padding: 10px;';
-        else {
-          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
-          setTimeout(function() {
-            warningBanner.removeChild(div);
-            updateBannerVisibility();
-          }, 5000);
-        }
-        updateBannerVisibility();
-      }
-
-      var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/Roomsss.loader.js";
-      var config = {
-        dataUrl: buildUrl + "/Roomsss.data.gz",
-        frameworkUrl: buildUrl + "/Roomsss.framework.js.gz",
-        codeUrl: buildUrl + "/Roomsss.wasm.gz",
-        streamingAssetsUrl: "StreamingAssets",
-        companyName: "DefaultCompany",
-        productName: "Rooms",
-        productVersion: "0.1",
-        showBanner: unityShowBanner,
-      };
-
-      // By default Unity keeps WebGL canvas render target size matched with
-      // the DOM size of the canvas element (scaled by window.devicePixelRatio)
-      // Set this to false if you want to decouple this synchronization from
-      // happening inside the engine, and you would instead like to size up
-      // the canvas DOM size and WebGL render target sizes yourself.
-      // config.matchWebGLToCanvasSize = false;
-
-      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        container.className = "unity-mobile";
-        // Avoid draining fillrate performance on mobile devices,
-        // and default/override low DPI mode on mobile browsers.
-        config.devicePixelRatio = 1;
-        unityShowBanner('WebGL builds are not supported on mobile devices.');
-      } else {
-        canvas.style.width = "960px";
-        canvas.style.height = "600px";
-      }
-      loadingBar.style.display = "block";
-
-      var script = document.createElement("script");
-      script.src = loaderUrl;
-      script.onload = () => {
-        createUnityInstance(canvas, config, (progress) => {
-          progressBarFull.style.width = 100 * progress + "%";
-        }).then((unityInstance) => {
-          loadingBar.style.display = "none";
-          fullscreenButton.onclick = () => {
-            unityInstance.SetFullscreen(1);
-          };
-        }).catch((message) => {
-          alert(message);
-        });
-      };
-      document.body.appendChild(script);
-    </script>
-  </body>
-</html>
--->
