@@ -14,11 +14,36 @@
 
         body {
             font-family: Arial, sans-serif;
-            line-height: 1.6;
             color: #333;
         }
 
-        /* Header Section */
+        /* Language Selection Page */
+        #language-selection {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #FF6F00;
+            color: #fff;
+            text-align: center;
+        }
+
+        .language-button {
+            background: #333;
+            color: #fff;
+            padding: 20px 40px;
+            margin: 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        /* Main Content */
+        #main-content {
+            display: none;
+        }
+
         header {
             background: url('https://via.placeholder.com/1500x800') no-repeat center center/cover;
             height: 100vh;
@@ -27,28 +52,6 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-        }
-
-        nav ul {
-            list-style: none;
-            display: flex;
-            justify-content: center;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 10px;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            left: 0;
-        }
-
-        nav ul li {
-            margin: 0 15px;
-        }
-
-        nav ul li a {
-            color: #fff;
-            text-decoration: none;
-            font-weight: bold;
         }
 
         .hero h1 {
@@ -62,7 +65,7 @@
         }
 
         .hero .button {
-            background: #e74c3c;
+            background: #FF6F00;
             color: #fff;
             padding: 10px 20px;
             text-decoration: none;
@@ -70,40 +73,16 @@
             font-size: 1rem;
         }
 
-        /* Releases Section */
-        #releases {
+        /* Music Section */
+        #music {
             padding: 50px;
             background: #f4f4f4;
             text-align: center;
         }
 
-        #releases h2 {
-            margin-bottom: 20px;
-            font-size: 2rem;
-        }
-
-        .release {
-            display: inline-block;
-            margin: 20px;
-            text-align: left;
-            width: 300px;
-        }
-
-        .release img {
-            width: 100%;
-            height: auto;
-            border-radius: 10px;
-        }
-
-        .release h3 {
-            margin: 10px 0;
-        }
-
-        .links a {
-            text-decoration: none;
-            color: #e74c3c;
-            margin-right: 10px;
-            font-weight: bold;
+        .music-embed {
+            margin: 20px auto;
+            max-width: 400px;
         }
 
         /* Social Media Section */
@@ -112,11 +91,6 @@
             background: #333;
             color: #fff;
             text-align: center;
-        }
-
-        #social h2 {
-            margin-bottom: 20px;
-            font-size: 2rem;
         }
 
         .social-icons a {
@@ -129,53 +103,23 @@
             height: 50px;
         }
 
-        /* All Music Platforms Button */
-        #all-platforms {
-            margin-top: 30px;
-        }
-
-        #all-platforms a {
-            background: #e74c3c;
-            color: #fff;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 5px;
-            font-size: 1rem;
-            display: inline-block;
-        }
-
-        /* Contact Section */
-        #contact {
+        /* News Section */
+        #news {
             padding: 50px;
             background: #f4f4f4;
             text-align: center;
         }
 
-        #contact h2 {
+        .news-item {
             margin-bottom: 20px;
-            font-size: 2rem;
         }
 
-        #contact form {
-            max-width: 600px;
-            margin: 0 auto;
+        .news-item h3 {
+            margin-bottom: 10px;
+            font-size: 1.5rem;
         }
 
-        #contact input, #contact textarea {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-
-        #contact button {
-            background: #e74c3c;
-            color: #fff;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
+        .news-item p {
             font-size: 1rem;
         }
 
@@ -191,91 +135,93 @@
             margin: 0;
             font-size: 0.9rem;
         }
+
+        .cooperation {
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
 
-    <!-- Header Section -->
-    <header id="home">
-        <nav>
-            <ul>
-                <li><a href="#home">Home</a></li>
-                <li><a href="#releases">Releases</a></li>
-                <li><a href="#social">Social Media</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </nav>
-        <div class="hero">
-            <h1>Campie Music</h1>
-            <p>New Single Out Now!</p>
-            <a href="#releases" class="button">Listen Now</a>
-        </div>
-    </header>
+    <!-- Language Selection Page -->
+    <div id="language-selection">
+        <button class="language-button" onclick="selectLanguage('en')">English</button>
+        <button class="language-button" onclick="selectLanguage('ru')">Русский</button>
+    </div>
 
-    <!-- Releases Section -->
-    <section id="releases">
-        <h2>Latest Releases</h2>
-        <div class="release">
-            <img src="https://via.placeholder.com/300" alt="Album Cover">
-            <h3>Album Name</h3>
-            <p>Release Date: August 17, 2024</p>
-            <div class="links">
-                <a href="#">Spotify</a>
-                <a href="#">Apple Music</a>
-                <a href="#">SoundCloud</a>
+    <!-- Main Content -->
+    <div id="main-content">
+        <!-- Header Section -->
+        <header>
+            <div class="hero">
+                <h1>Campie Music</h1>
+                <p>New Single Out Now!</p>
+                <a href="#music" class="button">Listen Now</a>
             </div>
-        </div>
-        <!-- Add more releases as needed -->
-        <div id="all-platforms">
-            <a href="#platforms">See all music platforms</a>
-        </div>
-    </section>
+        </header>
 
-    <!-- Social Media Section -->
-    <section id="social">
-        <h2>Follow Campie</h2>
-        <div class="social-icons">
-            <a href="#"><img src="https://via.placeholder.com/50" alt="Telegram"></a>
-            <a href="#"><img src="https://via.placeholder.com/50" alt="YouTube"></a>
-            <a href="#"><img src="https://via.placeholder.com/50" alt="Instagram"></a>
-            <a href="#"><img src="https://via.placeholder.com/50" alt="Spotify"></a>
-            <a href="#"><img src="https://via.placeholder.com/50" alt="Genius"></a>
-        </div>
-    </section>
+        <!-- Music Section -->
+        <section id="music">
+            <h2>Latest Releases</h2>
+            <div class="music-embed">
+                <!-- Spotify Embed -->
+                <iframe src="https://open.spotify.com/embed/album/1DFixLWuPkv3KT3TnV35m3" width="100%" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+            </div>
+            <div class="music-embed">
+                <!-- YouTube Embed -->
+                <iframe width="100%" height="315" src="https://www.youtube.com/embed/2Vv-BfVoq4g" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            <div class="music-embed">
+                <!-- Genius Lyrics Link -->
+                <a href="https://genius.com/Ed-sheeran-perfect-lyrics" class="button">View Lyrics on Genius</a>
+            </div>
+        </section>
 
-    <!-- All Music Platforms Section -->
-    <section id="platforms" style="padding: 50px; background: #f4f4f4; text-align: center;">
-        <h2>Available on All Major Music Platforms</h2>
-        <div class="social-icons">
-            <a href="#"><img src="https://via.placeholder.com/50" alt="Spotify"></a>
-            <a href="#"><img src="https://via.placeholder.com/50" alt="Apple Music"></a>
-            <a href="#"><img src="https://via.placeholder.com/50" alt="SoundCloud"></a>
-            <a href="#"><img src="https://via.placeholder.com/50" alt="VK Music"></a>
-            <a href="#"><img src="https://via.placeholder.com/50" alt="Yandex Music"></a>
-            <a href="#"><img src="https://via.placeholder.com/50" alt="SberZvuk"></a>
-        </div>
-    </section>
+        <!-- Social Media Section -->
+        <section id="social">
+            <h2>Follow Campie</h2>
+            <div class="social-icons">
+                <a href="#"><img src="https://via.placeholder.com/50" alt="Telegram"></a>
+                <a href="#"><img src="https://via.placeholder.com/50" alt="YouTube"></a>
+                <a href="#"><img src="https://via.placeholder.com/50" alt="Instagram"></a>
+                <a href="#"><img src="https://via.placeholder.com/50" alt="Spotify"></a>
+                <a href="#"><img src="https://via.placeholder.com/50" alt="Genius"></a>
+            </div>
+            <div id="all-platforms">
+                <a href="#platforms" class="button">See all music platforms</a>
+            </div>
+        </section>
 
-    <!-- Contact Section -->
-    <section id="contact">
-        <h2>Contact</h2>
-        <p>For bookings and inquiries, please use the form below:</p>
-        <form action="submit_form.php" method="POST">
-            <input type="text" name="name" placeholder="Your Name" required>
-            <input type="email" name="email" placeholder="Your Email" required>
-            <textarea name="message" placeholder="Your Message" required></textarea>
-            <button type="submit">Send Message</button>
-        </form>
-    </section>
+        <!-- News Section -->
+        <section id="news">
+            <h2>Latest News</h2>
+            <div class="news-item">
+                <h3>New Album Release - August 2024</h3>
+                <p>Check out Campie's latest album now available on all major platforms.</p>
+            </div>
+            <div class="news-item">
+                <h3>Live Performance at XYZ Festival</h3>
+                <p>Join Campie at the XYZ Festival on September 10, 2024.</p>
+            </div>
+        </section>
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2024 Campie Music. All rights reserved.</p>
-    </footer>
+        <!-- Footer -->
+        <footer>
+            <p>&copy; 2024 Campie Music. All rights reserved.</p>
+            <p class="cooperation">For collaborations: <a href="mailto:email@example.com">email@example.com</a></p>
+        </footer>
+    </div>
+
+    <script>
+        function selectLanguage(lang) {
+            document.getElementById('language-selection').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+            // Implement language change here based on 'lang' (en or ru)
+        }
+    </script>
 
 </body>
 </html>
-
 
 <!--
 <!DOCTYPE html>
