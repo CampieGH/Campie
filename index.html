@@ -6,7 +6,7 @@
     <title>Campie - Music Project</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
             background-color: #121212;
@@ -33,6 +33,12 @@
             font-size: 16px;
             cursor: pointer;
             margin: 0 10px;
+            padding: 5px 10px;
+            transition: color 0.3s;
+        }
+
+        .language-selection button:hover {
+            color: #f0f0f0;
         }
 
         header {
@@ -48,13 +54,22 @@
             font-size: 24px;
         }
 
+        .header-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
         .header-buttons button {
             background: none;
             border: none;
             color: #ffffff;
             font-size: 20px;
-            margin-left: 10px;
             cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .header-buttons button:hover {
+            color: #f0f0f0;
         }
 
         .button-container {
@@ -94,14 +109,15 @@
             font-size: 18px;
             margin: 0 10px;
             cursor: pointer;
-        }
-
-        .social-links a {
-            text-decoration: none;
+            transition: color 0.3s;
         }
 
         .social-links button:hover {
             color: #f0f0f0;
+        }
+
+        .social-links a {
+            text-decoration: none;
         }
 
         /* Light Mode */
@@ -145,11 +161,11 @@
     <header>
         <div class="header-content">
             <h1>Campie</h1>
-            <div class="header-buttons">
-                <button id="mode-toggle">🌞</button>
-                <button onclick="toggleLanguage()">🌐</button>
-                <button onclick="shareWebsite()">📤 Поделиться сайтом</button>
-            </div>
+        </div>
+        <div class="header-buttons">
+            <button id="mode-toggle">🌞</button>
+            <button onclick="toggleLanguage()">🌐</button>
+            <button onclick="shareWebsite()">📤 Поделиться сайтом</button>
         </div>
     </header>
 
@@ -178,13 +194,7 @@
     <!-- JavaScript -->
     <script>
         function setLanguage(language) {
-            if (language === 'en') {
-                // Code to change the language to English
-                alert("Language set to English");
-            } else if (language === 'ru') {
-                // Code to change the language to Russian
-                alert("Язык установлен на Русский");
-            }
+            alert(language === 'en' ? "Language set to English" : "Язык установлен на Русский");
             document.getElementById('language-banner').style.display = 'none';
         }
 
@@ -209,11 +219,7 @@
         document.getElementById('mode-toggle').addEventListener('click', () => {
             document.body.classList.toggle('light-mode');
             const modeButton = document.getElementById('mode-toggle');
-            if (document.body.classList.contains('light-mode')) {
-                modeButton.textContent = "🌚";
-            } else {
-                modeButton.textContent = "🌞";
-            }
+            modeButton.textContent = document.body.classList.contains('light-mode') ? "🌚" : "🌞";
         });
 
         // Placeholder functions for buttons
