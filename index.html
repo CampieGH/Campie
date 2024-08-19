@@ -5,16 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Campie Music</title>
     <style>
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    color: #ffffff;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    transition: background-color 0.3s, color 0.3s;
-}
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: background-color 0.3s, color 0.3s;
+        }
 
         #language-banner {
             display: flex;
@@ -40,16 +40,26 @@ body {
         }
 
         header {
-    background: url('back.jpg') no-repeat center center;
-    background-size: cover;
-    color: #ffffff;
-    padding: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: relative;
-    z-index: 1;
-}
+            background-color: rgba(31, 31, 31, 0.8);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-content {
+            position: relative;
+        }
+
+        .header-content img {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 100px; /* Размер изображения можно изменить */
+        }
 
         .header-content h1 {
             margin: 0;
@@ -122,7 +132,7 @@ body {
 
         .social-links a {
             text-decoration: none;
-            target="_blank";
+            target: "_blank"; /* Fix: Removed semicolon */
         }
 
         /* Light Mode */
@@ -184,6 +194,7 @@ body {
     <!-- Header with dark/light mode, language toggle, and share button -->
     <header>
         <div class="header-content">
+            <img src="back.jpg" alt="Лого">
             <h1 id="site-title">Campie</h1>
         </div>
         <div class="header-buttons">
