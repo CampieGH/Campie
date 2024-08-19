@@ -9,7 +9,8 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #121212;
+            background: url('your-image-url.jpg') no-repeat center center fixed;
+            background-size: cover;
             color: #ffffff;
             display: flex;
             flex-direction: column;
@@ -22,7 +23,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 20px;
-            background-color: #1f1f1f;
+            background-color: rgba(31, 31, 31, 0.8);
         }
 
         .language-selection button {
@@ -41,7 +42,7 @@
         }
 
         header {
-            background-color: #1f1f1f;
+            background-color: rgba(31, 31, 31, 0.8);
             padding: 20px;
             display: flex;
             justify-content: space-between;
@@ -81,7 +82,7 @@
         }
 
         .popup-button {
-            background: #3a3a3a;
+            background: rgba(58, 58, 58, 0.8);
             border: none;
             color: #ffffff;
             padding: 15px 30px;
@@ -92,12 +93,12 @@
         }
 
         .popup-button:hover {
-            background-color: #555555;
+            background-color: rgba(85, 85, 85, 0.8);
             transform: scale(1.05);
         }
 
         footer {
-            background-color: #1f1f1f;
+            background-color: rgba(31, 31, 31, 0.8);
             padding: 20px;
             text-align: center;
             margin-top: auto;
@@ -137,15 +138,15 @@
         }
 
         body.light-mode #language-banner {
-            background-color: #e0e0e0;
+            background-color: rgba(224, 224, 224, 0.8);
         }
 
         body.light-mode .popup-button {
-            background: #d4d4d4;
+            background: rgba(212, 212, 212, 0.8);
         }
 
         body.light-mode .popup-button:hover {
-            background-color: #c0c0c0;
+            background-color: rgba(192, 192, 192, 0.8);
         }
 
         /* Адаптивный дизайн */
@@ -197,7 +198,6 @@
             <button class="popup-button" onclick="exploreSocials()">📷 <span id="btn-socials">Изучить соц. сети</span></button>
             <button class="popup-button" onclick="exploreProfile()">🎹 <span id="btn-profile">Изучить профиль артиста</span></button>
             <button class="popup-button" onclick="viewLyrics()">📙 <span id="btn-lyrics">Посмотреть тексты треков</span></button>
-            <button class="popup-button" onclick="viewNews()">📰 <span id="btn-news">Новости</span></button>
         </div>
     </main>
 
@@ -235,7 +235,6 @@
                     btnSocials: "Explore Socials",
                     btnProfile: "Explore Artist Profile",
                     btnLyrics: "View Lyrics",
-                    btnNews: "News",
                     footerText: "Subscribe to the Telegram channel: t.me/campieart",
                 },
                 ru: {
@@ -245,7 +244,6 @@
                     btnSocials: "Изучить соц. сети",
                     btnProfile: "Изучить профиль артиста",
                     btnLyrics: "Посмотреть тексты треков",
-                    btnNews: "Новости",
                     footerText: "Поддписывайтесь на Телеграм канал: t.me/campieart",
                 }
             };
@@ -257,7 +255,6 @@
             document.getElementById('btn-socials').textContent = texts.btnSocials;
             document.getElementById('btn-profile').textContent = texts.btnProfile;
             document.getElementById('btn-lyrics').textContent = texts.btnLyrics;
-            document.getElementById('btn-news').textContent = texts.btnNews;
             document.getElementById('footer-text').textContent = texts.footerText;
         }
 
@@ -294,10 +291,6 @@
 
         function viewLyrics() {
             alert(currentLanguage === 'en' ? "Viewing lyrics" : "Посмотреть тексты треков");
-        }
-
-        function viewNews() {
-            alert(currentLanguage === 'en' ? "Viewing news" : "Новости");
         }
     </script>
 </body>
