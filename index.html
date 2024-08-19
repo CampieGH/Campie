@@ -18,7 +18,7 @@
 
         header {
             background-color: var(--header-background-color);
-            padding: 20px;
+            padding: 33px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -54,69 +54,6 @@
         }
 
         .header-buttons button:hover {
-            color: var(--icon-hover-color);
-        }
-
-        .language-toggle {
-            position: absolute;
-            left: 20px;
-            display: flex;
-            align-items: center;
-        }
-
-        .language-toggle input[type="checkbox"] {
-            display: none;
-        }
-
-        .language-toggle label {
-            background: var(--icon-background);
-            border-radius: 15px;
-            padding: 5px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .language-toggle .switch {
-            width: 40px;
-            height: 20px;
-            background-color: var(--switch-background);
-            border-radius: 20px;
-            position: relative;
-            transition: background-color 0.3s;
-        }
-
-        .language-toggle .switch:before {
-            content: "";
-            width: 16px;
-            height: 16px;
-            background-color: var(--switch-thumb);
-            border-radius: 50%;
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            transition: transform 0.3s;
-        }
-
-        .language-toggle input[type="checkbox"]:checked + label .switch {
-            background-color: var(--switch-background-checked);
-        }
-
-        .language-toggle input[type="checkbox"]:checked + label .switch:before {
-            transform: translateX(20px);
-        }
-
-        .language-selection button {
-            background: none;
-            border: none;
-            color: var(--icon-color);
-            font-size: 16px;
-            cursor: pointer;
-            padding: 5px 10px;
-        }
-
-        .language-selection button:hover {
             color: var(--icon-hover-color);
         }
 
@@ -220,23 +157,14 @@
     </style>
 </head>
 <body>
-    <!-- Language and Mode Switch -->
-    <div class="language-toggle">
-        <input type="checkbox" id="language-switch" onchange="toggleLanguage()">
-        <label for="language-switch">
-            <div class="switch"></div>
-            <span id="language-text">English / Русский</span>
-        </label>
-    </div>
-
     <!-- Header with dark/light mode and share button -->
     <header>
         <div class="header-content">
             <img src="back.png" alt="Logo">
         </div>
         <div class="header-buttons">
-            <button id="mode-toggle" aria-label="Toggle dark/light mode">🌞</button>
-            <button onclick="shareWebsite()" aria-label="Share Website">📤 <span id="share-text">Поделиться сайтом</span></button>
+            <button id="mode-toggle" aria-label="Toggle mode and language">🌞</button>
+            <button onclick="shareWebsite()" aria-label="Share">📤 <span id="share-text"></span></button>
         </div>
     </header>
 
@@ -271,23 +199,29 @@
 
     <!-- JavaScript -->
     <script>
+        let currentMode = 'dark'; // Start in dark mode by default
         let currentLanguage = 'ru';
 
-        function setLanguage(language) {
-            currentLanguage = language;
-            toggleLanguageContent();
-        }
-
-        function toggleLanguage() {
-            const isChecked = document.getElementById('language-switch').checked;
-            setLanguage(isChecked ? 'en' : 'ru');
-        }
+        document.getElementById('mode-toggle').addEventListener('click', () => {
+            if (currentMode === 'dark') {
+                document.body.classList.add('light-mode');
+                currentMode = 'light';
+                document.getElementById('mode-toggle').textContent = "🌚";
+            } else if (currentMode === 'light') {
+                currentMode = 'language'; // Enter language mode
+                document.getElementById('mode-toggle').textContent = currentLanguage === 'ru' ? "🇬🇧" : "🇷🇺";
+            } else {
+                currentLanguage = currentLanguage === 'ru' ? 'en' : 'ru';
+                toggleLanguageContent();
+                document.getElementById('mode-toggle').textContent = currentLanguage === 'ru' ? "🇬🇧" : "🇷🇺";
+            }
+        });
 
         function toggleLanguageContent() {
             const translations = {
                 en: {
                     siteTitle: "Campie",
-                    shareText: "Share Website",
+                    shareText: "",
                     btnListen: "Listen to 'Changing'",
                     btnSocials: "Explore Socials",
                     btnProfile: "Explore Artist Profile",
@@ -296,7 +230,7 @@
                 },
                 ru: {
                     siteTitle: "Кэмпи",
-                    shareText: "Поделиться сайтом",
+                    shareText: "",
                     btnListen: "Послушать «Changing»",
                     btnSocials: "Изучить соц. сети",
                     btnProfile: "Изучить профиль артиста",
@@ -326,13 +260,6 @@
             }
         }
 
-        document.getElementById('mode-toggle').addEventListener('click', () => {
-            document.body.classList.toggle('light-mode');
-            const modeButton = document.getElementById('mode-toggle');
-            modeButton.textContent = document.body.classList.contains('light-mode') ? "🌚" : "🌞";
-        });
-
-        // Placeholder functions for buttons
         function listenToChanging() {
             alert(currentLanguage === 'en' ? "Listening to 'Changing'" : "Послушать «Changing»");
         }
