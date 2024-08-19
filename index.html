@@ -16,31 +16,8 @@
             transition: background-color 0.3s, color 0.3s;
         }
 
-        #language-banner {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            background-color: rgba(31, 31, 31, 0.8);
-        }
-
-        .language-selection button {
-            background: none;
-            border: none;
-            color: #ffffff;
-            font-size: 16px;
-            cursor: pointer;
-            margin: 0 10px;
-            padding: 5px 10px;
-            transition: color 0.3s;
-        }
-
-        .language-selection button:hover {
-            color: #f0f0f0;
-        }
-
         header {
-            background-color: rgba(31, 31, 31, 0.8);
+            background-color: var(--header-background-color);
             padding: 20px;
             display: flex;
             justify-content: center;
@@ -50,38 +27,97 @@
         }
 
         .header-content {
-            position: relative;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
         }
 
         .header-content img {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            max-width: 100px; /* Размер изображения можно изменить */
-        }
-
-        .header-content h1 {
-            margin: 0;
-            font-size: 24px;
+            max-width: 120px; /* Size of the logo */
         }
 
         .header-buttons {
+            position: absolute;
+            right: 20px;
             display: flex;
             gap: 15px;
+            align-items: center;
         }
 
         .header-buttons button {
             background: none;
             border: none;
-            color: #ffffff;
-            font-size: 20px;
+            color: var(--icon-color);
+            font-size: 24px;
             cursor: pointer;
             transition: color 0.3s;
         }
 
         .header-buttons button:hover {
-            color: #f0f0f0;
+            color: var(--icon-hover-color);
+        }
+
+        .language-toggle {
+            position: absolute;
+            left: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .language-toggle input[type="checkbox"] {
+            display: none;
+        }
+
+        .language-toggle label {
+            background: var(--icon-background);
+            border-radius: 15px;
+            padding: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .language-toggle .switch {
+            width: 40px;
+            height: 20px;
+            background-color: var(--switch-background);
+            border-radius: 20px;
+            position: relative;
+            transition: background-color 0.3s;
+        }
+
+        .language-toggle .switch:before {
+            content: "";
+            width: 16px;
+            height: 16px;
+            background-color: var(--switch-thumb);
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+        }
+
+        .language-toggle input[type="checkbox"]:checked + label .switch {
+            background-color: var(--switch-background-checked);
+        }
+
+        .language-toggle input[type="checkbox"]:checked + label .switch:before {
+            transform: translateX(20px);
+        }
+
+        .language-selection button {
+            background: none;
+            border: none;
+            color: var(--icon-color);
+            font-size: 16px;
+            cursor: pointer;
+            padding: 5px 10px;
+        }
+
+        .language-selection button:hover {
+            color: var(--icon-hover-color);
         }
 
         .button-container {
@@ -94,9 +130,9 @@
         }
 
         .popup-button {
-            background: rgba(58, 58, 58, 0.8);
+            background: var(--button-background);
             border: none;
-            color: #ffffff;
+            color: var(--button-color);
             padding: 15px 30px;
             font-size: 18px;
             cursor: pointer;
@@ -105,12 +141,12 @@
         }
 
         .popup-button:hover {
-            background-color: rgba(85, 85, 85, 0.8);
+            background-color: var(--button-background-hover);
             transform: scale(1.05);
         }
 
         footer {
-            background-color: rgba(31, 31, 31, 0.8);
+            background-color: var(--footer-background);
             padding: 20px;
             text-align: center;
             margin-top: auto;
@@ -119,7 +155,7 @@
         .social-links button {
             background: none;
             border: none;
-            color: #ffffff;
+            color: var(--icon-color);
             font-size: 18px;
             margin: 0 10px;
             cursor: pointer;
@@ -127,44 +163,45 @@
         }
 
         .social-links button:hover {
-            color: #f0f0f0;
+            color: var(--icon-hover-color);
         }
 
         .social-links a {
             text-decoration: none;
-            target: "_blank"; /* Fix: Removed semicolon */
         }
 
-        /* Light Mode */
+        /* Light Mode Colors */
         body.light-mode {
-            background-color: #f5f5f5;
-            color: #121212;
+            --header-background-color: rgba(240, 240, 240, 0.9);
+            --icon-color: #121212;
+            --icon-hover-color: #333333;
+            --button-background: rgba(212, 212, 212, 0.9);
+            --button-color: #121212;
+            --button-background-hover: rgba(192, 192, 192, 0.9);
+            --footer-background: rgba(240, 240, 240, 0.9);
+            --switch-background: #d0d0d0;
+            --switch-thumb: #ffffff;
+            --switch-background-checked: #a0a0a0;
         }
 
-        body.light-mode .header-content h1,
-        body.light-mode .header-buttons button,
-        body.light-mode .popup-button,
-        body.light-mode footer p,
-        body.light-mode .social-links button {
-            color: #121212;
+        /* Dark Mode Colors */
+        body {
+            --header-background-color: rgba(31, 31, 31, 0.9);
+            --icon-color: #ffffff;
+            --icon-hover-color: #f0f0f0;
+            --button-background: rgba(58, 58, 58, 0.8);
+            --button-color: #ffffff;
+            --button-background-hover: rgba(85, 85, 85, 0.8);
+            --footer-background: rgba(31, 31, 31, 0.8);
+            --switch-background: #404040;
+            --switch-thumb: #ffffff;
+            --switch-background-checked: #606060;
         }
 
-        body.light-mode #language-banner {
-            background-color: rgba(224, 224, 224, 0.8);
-        }
-
-        body.light-mode .popup-button {
-            background: rgba(212, 212, 212, 0.8);
-        }
-
-        body.light-mode .popup-button:hover {
-            background-color: rgba(192, 192, 192, 0.8);
-        }
-
-        /* Адаптивный дизайн */
+        /* Responsive Design */
         @media (max-width: 768px) {
-            .header-content h1 {
-                font-size: 20px;
+            .header-content img {
+                max-width: 80px; /* Adjust logo size */
             }
 
             .header-buttons button {
@@ -183,45 +220,52 @@
     </style>
 </head>
 <body>
-    <!-- Language Selection Banner -->
-    <div id="language-banner">
-        <div class="language-selection">
-            <button onclick="setLanguage('en')">English</button> /
-            <button onclick="setLanguage('ru')">Русский</button>
-        </div>
+    <!-- Language and Mode Switch -->
+    <div class="language-toggle">
+        <input type="checkbox" id="language-switch" onchange="toggleLanguage()">
+        <label for="language-switch">
+            <div class="switch"></div>
+            <span id="language-text">English / Русский</span>
+        </label>
     </div>
 
-    <!-- Header with dark/light mode, language toggle, and share button -->
+    <!-- Header with dark/light mode and share button -->
     <header>
         <div class="header-content">
-            <img src="back.jpg" alt="Лого">
-            <h1 id="site-title">Campie</h1>
+            <img src="back.png" alt="Logo">
         </div>
         <div class="header-buttons">
-            <button id="mode-toggle">🌞</button>
-            <button onclick="toggleLanguage()">🌐</button>
-            <button onclick="shareWebsite()">📤 <span id="share-text">Поделиться сайтом</span></button>
+            <button id="mode-toggle" aria-label="Toggle dark/light mode">🌞</button>
+            <button onclick="shareWebsite()" aria-label="Share Website">📤 <span id="share-text">Поделиться сайтом</span></button>
         </div>
     </header>
 
     <!-- Main Content -->
     <main>
         <div class="button-container">
-            <button class="popup-button" onclick="listenToChanging()">🎤 <span id="btn-listen">Послушать «Changing»</span></button>
-            <button class="popup-button" onclick="exploreSocials()">📷 <span id="btn-socials">Изучить соц. сети</span></button>
-            <button class="popup-button" onclick="exploreProfile()">🎹 <span id="btn-profile">Изучить профиль артиста</span></button>
-            <button class="popup-button" onclick="viewLyrics()">📙 <span id="btn-lyrics">Посмотреть тексты треков</span></button>
+            <button class="popup-button" onclick="listenToChanging()">
+                🎤 <span id="btn-listen">Послушать «Changing»</span>
+            </button>
+            <button class="popup-button" onclick="exploreSocials()">
+                📷 <span id="btn-socials">Изучить соц. сети</span>
+            </button>
+            <button class="popup-button" onclick="exploreProfile()">
+                🎹 <span id="btn-profile">Изучить профиль артиста</span>
+            </button>
+            <button class="popup-button" onclick="viewLyrics()">
+                📙 <span id="btn-lyrics">Посмотреть тексты треков</span>
+            </button>
         </div>
     </main>
 
     <!-- Footer -->
     <footer>
-        <p id="footer-text">Поддписывайтесь на Телеграм канал: t.me/campieart</p>
+        <p id="footer-text">Подпишитесь на Телеграм канал: <a href="https://t.me/campieart" target="_blank">t.me/campieart</a></p>
         <div class="social-links">
-            <a href="https://t.me/campieart" target="_blank"><button>✈️ Telegram</button></a>
-            <a href="https://youtube.com/campieart" target="_blank"><button>🔴 YouTube</button></a>
-            <a href="https://instagram.com" target="_blank"><button>📷 Instagram</button></a>
-            <a href="https://genius.com" target="_blank"><button>🌟 Genius</button></a>
+            <a href="https://t.me/campieart" target="_blank"><button aria-label="Telegram">✈️ Telegram</button></a>
+            <a href="https://youtube.com/campieart" target="_blank"><button aria-label="YouTube">🔴 YouTube</button></a>
+            <a href="https://instagram.com" target="_blank"><button aria-label="Instagram">📷 Instagram</button></a>
+            <a href="https://genius.com" target="_blank"><button aria-label="Genius">🌟 Genius</button></a>
         </div>
     </footer>
 
@@ -235,8 +279,8 @@
         }
 
         function toggleLanguage() {
-            currentLanguage = currentLanguage === 'ru' ? 'en' : 'ru';
-            toggleLanguageContent();
+            const isChecked = document.getElementById('language-switch').checked;
+            setLanguage(isChecked ? 'en' : 'ru');
         }
 
         function toggleLanguageContent() {
@@ -248,7 +292,7 @@
                     btnSocials: "Explore Socials",
                     btnProfile: "Explore Artist Profile",
                     btnLyrics: "View Lyrics",
-                    footerText: "Subscribe to the Telegram channel: t.me/campieart",
+                    footerText: "Subscribe to the Telegram channel: <a href='https://t.me/campieart' target='_blank'>t.me/campieart</a>",
                 },
                 ru: {
                     siteTitle: "Кэмпи",
@@ -257,18 +301,17 @@
                     btnSocials: "Изучить соц. сети",
                     btnProfile: "Изучить профиль артиста",
                     btnLyrics: "Посмотреть тексты треков",
-                    footerText: "Поддписывайтесь на Телеграм канал: t.me/campieart",
+                    footerText: "Подпишитесь на Телеграм канал: <a href='https://t.me/campieart' target='_blank'>t.me/campieart</a>",
                 }
             };
 
             const texts = translations[currentLanguage];
-            document.getElementById('site-title').textContent = texts.siteTitle;
             document.getElementById('share-text').textContent = texts.shareText;
             document.getElementById('btn-listen').textContent = texts.btnListen;
             document.getElementById('btn-socials').textContent = texts.btnSocials;
             document.getElementById('btn-profile').textContent = texts.btnProfile;
             document.getElementById('btn-lyrics').textContent = texts.btnLyrics;
-            document.getElementById('footer-text').textContent = texts.footerText;
+            document.getElementById('footer-text').innerHTML = texts.footerText;
         }
 
         function shareWebsite() {
