@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +11,9 @@
             padding: 0;
             background-color: #121212;
             color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
             transition: background-color 0.3s, color 0.3s;
         }
 
@@ -69,10 +72,12 @@
         }
 
         .button-container {
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
             align-items: center;
-            margin: 50px 0;
+            justify-content: center;
+            margin: 50px 20px;
         }
 
         .popup-button {
@@ -81,7 +86,6 @@
             color: #ffffff;
             padding: 15px 30px;
             font-size: 18px;
-            margin: 10px 0;
             cursor: pointer;
             border-radius: 8px;
             transition: background-color 0.3s, transform 0.3s;
@@ -96,6 +100,7 @@
             background-color: #1f1f1f;
             padding: 20px;
             text-align: center;
+            margin-top: auto;
         }
 
         .social-links button {
@@ -114,6 +119,7 @@
 
         .social-links a {
             text-decoration: none;
+            target="_blank";
         }
 
         /* Light Mode */
@@ -141,6 +147,26 @@
         body.light-mode .popup-button:hover {
             background-color: #c0c0c0;
         }
+
+        /* Адаптивный дизайн */
+        @media (max-width: 768px) {
+            .header-content h1 {
+                font-size: 20px;
+            }
+
+            .header-buttons button {
+                font-size: 18px;
+            }
+
+            .popup-button {
+                font-size: 16px;
+                padding: 10px 20px;
+            }
+
+            .button-container {
+                margin: 30px 10px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -155,47 +181,84 @@
     <!-- Header with dark/light mode, language toggle, and share button -->
     <header>
         <div class="header-content">
-            <h1>Campie</h1>
+            <h1 id="site-title">Campie</h1>
         </div>
         <div class="header-buttons">
             <button id="mode-toggle">🌞</button>
             <button onclick="toggleLanguage()">🌐</button>
-            <button onclick="shareWebsite()">📤 Поделиться сайтом</button>
+            <button onclick="shareWebsite()">📤 <span id="share-text">Поделиться сайтом</span></button>
         </div>
     </header>
 
     <!-- Main Content -->
     <main>
         <div class="button-container">
-            <button class="popup-button" onclick="listenToChanging()">🎤 <span>Послушать «Changing»</span></button>
-            <button class="popup-button" onclick="exploreSocials()">📷 <span>Изучить соц. сети</span></button>
-            <button class="popup-button" onclick="exploreProfile()">🎹 <span>Изучить профиль артиста</span></button>
-            <button class="popup-button" onclick="viewLyrics()">📙 <span>Посмотреть тексты треков</span></button>
-            <button class="popup-button" onclick="viewNews()">📰 <span>Новости</span></button>
+            <button class="popup-button" onclick="listenToChanging()">🎤 <span id="btn-listen">Послушать «Changing»</span></button>
+            <button class="popup-button" onclick="exploreSocials()">📷 <span id="btn-socials">Изучить соц. сети</span></button>
+            <button class="popup-button" onclick="exploreProfile()">🎹 <span id="btn-profile">Изучить профиль артиста</span></button>
+            <button class="popup-button" onclick="viewLyrics()">📙 <span id="btn-lyrics">Посмотреть тексты треков</span></button>
+            <button class="popup-button" onclick="viewNews()">📰 <span id="btn-news">Новости</span></button>
         </div>
     </main>
 
     <!-- Footer -->
     <footer>
-        <p>Поддписывайтесь на Телеграм канал: t.me/campieart</p>
+        <p id="footer-text">Поддписывайтесь на Телеграм канал: t.me/campieart</p>
         <div class="social-links">
-            <a href="https://t.me/campieart"><button>✈️ Telegram</button></a>
-            <a href="https://youtube.com/campieart"><button>🔴 YouTube</button></a>
-            <a href="https://instagram.com"><button>📷 Instagram</button></a>
-            <a href="https://genius.com"><button>🌟 Genius</button></a>
+            <a href="https://t.me/campieart" target="_blank"><button>✈️ Telegram</button></a>
+            <a href="https://youtube.com/campieart" target="_blank"><button>🔴 YouTube</button></a>
+            <a href="https://instagram.com" target="_blank"><button>📷 Instagram</button></a>
+            <a href="https://genius.com" target="_blank"><button>🌟 Genius</button></a>
         </div>
     </footer>
 
     <!-- JavaScript -->
     <script>
+        let currentLanguage = 'ru';
+
         function setLanguage(language) {
-            alert(language === 'en' ? "Language set to English" : "Язык установлен на Русский");
-            document.getElementById('language-banner').style.display = 'none';
+            currentLanguage = language;
+            toggleLanguageContent();
         }
 
         function toggleLanguage() {
-            alert("Language toggle clicked");
-            // Implement language toggle functionality
+            currentLanguage = currentLanguage === 'ru' ? 'en' : 'ru';
+            toggleLanguageContent();
+        }
+
+        function toggleLanguageContent() {
+            const translations = {
+                en: {
+                    siteTitle: "Campie",
+                    shareText: "Share Website",
+                    btnListen: "Listen to 'Changing'",
+                    btnSocials: "Explore Socials",
+                    btnProfile: "Explore Artist Profile",
+                    btnLyrics: "View Lyrics",
+                    btnNews: "News",
+                    footerText: "Subscribe to the Telegram channel: t.me/campieart",
+                },
+                ru: {
+                    siteTitle: "Кэмпи",
+                    shareText: "Поделиться сайтом",
+                    btnListen: "Послушать «Changing»",
+                    btnSocials: "Изучить соц. сети",
+                    btnProfile: "Изучить профиль артиста",
+                    btnLyrics: "Посмотреть тексты треков",
+                    btnNews: "Новости",
+                    footerText: "Поддписывайтесь на Телеграм канал: t.me/campieart",
+                }
+            };
+
+            const texts = translations[currentLanguage];
+            document.getElementById('site-title').textContent = texts.siteTitle;
+            document.getElementById('share-text').textContent = texts.shareText;
+            document.getElementById('btn-listen').textContent = texts.btnListen;
+            document.getElementById('btn-socials').textContent = texts.btnSocials;
+            document.getElementById('btn-profile').textContent = texts.btnProfile;
+            document.getElementById('btn-lyrics').textContent = texts.btnLyrics;
+            document.getElementById('btn-news').textContent = texts.btnNews;
+            document.getElementById('footer-text').textContent = texts.footerText;
         }
 
         function shareWebsite() {
@@ -218,23 +281,23 @@
 
         // Placeholder functions for buttons
         function listenToChanging() {
-            alert("Listening to 'Changing'");
+            alert(currentLanguage === 'en' ? "Listening to 'Changing'" : "Послушать «Changing»");
         }
 
         function exploreSocials() {
-            alert("Exploring social networks");
+            alert(currentLanguage === 'en' ? "Exploring social networks" : "Изучить соц. сети");
         }
 
         function exploreProfile() {
-            alert("Exploring artist profile");
+            alert(currentLanguage === 'en' ? "Exploring artist profile" : "Изучить профиль артиста");
         }
 
         function viewLyrics() {
-            alert("Viewing lyrics");
+            alert(currentLanguage === 'en' ? "Viewing lyrics" : "Посмотреть тексты треков");
         }
 
         function viewNews() {
-            alert("Viewing news");
+            alert(currentLanguage === 'en' ? "Viewing news" : "Новости");
         }
     </script>
 </body>
